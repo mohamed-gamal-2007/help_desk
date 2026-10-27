@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="{{ current_lang }}" dir="{{ 'rtl' if current_lang == 'ar' else 'ltr' }}">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- PWA Meta Tags -->
+    <meta name="application-name" content="Help Desk Pro">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="HelpDesk">
+    <meta name="theme-color" content="#6366f1">
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+
+    <!-- Icons for iOS -->
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='icons/icon-152x152.png') }}">
+    <link rel="apple-touch-icon" sizes="72x72" href="{{ url_for('static', filename='icons/icon-72x72.png') }}">
+    <link rel="apple-touch-icon" sizes="96x96" href="{{ url_for('static', filename='icons/icon-96x96.png') }}">
+    <link rel="apple-touch-icon" sizes="128x128" href="{{ url_for('static', filename='icons/icon-128x128.png') }}">
+    <link rel="apple-touch-icon" sizes="144x144" href="{{ url_for('static', filename='icons/icon-144x144.png') }}">
+    <link rel="apple-touch-icon" sizes="152x152" href="{{ url_for('static', filename='icons/icon-152x152.png') }}">
+    <link rel="apple-touch-icon" sizes="192x192" href="{{ url_for('static', filename='icons/icon-192x192.png') }}">
+
+    <title>{{ _('تسجيل الدخول') }} | {{ company_name }}</title>
+    <!-- Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Inter:wght@400;600;700&display=swap"
+        rel="stylesheet">
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <style>
+        .login-container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="lang-switcher">
+        <a href="/set_lang/{{ 'en' if current_lang == 'ar' else 'ar' }}" class="lang-btn"
+            style="text-decoration: none;">
+            <i class="fas fa-globe"></i> {{ 'English' if current_lang == 'ar' else 'العربية' }}
+        </a>
+    </div>
+
+    <div class="login-container">
+        <div class="glass-card" id="loginCard">
+            <div class="header">
+                <h1>{{ _('مرحباً بك مجدداً') }}</h1>
+                <p class="subtitle">{{ _('يرجى تسجيل الدخول للوصول إلى لوحة التحكم') }}</p>
+                {% if error %}
+                <div
+                    style="background: rgba(239, 68, 68, 0.2); color: #f87171; padding: 10px; border-radius: 8px; margin-top: 10px; border: 1px solid rgba(239, 68, 68, 0.3); font-weight: bold;">
+                    <i class="fas fa-exclamation-circle"></i> {{ error }}
+                </div>
+                {% endif %}
+            </div>
+
+            <form action="/login" method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                <div class="form-group">
+                    <label for="email">{{ _('البريد الإلكتروني') }}</label>
+                    <input type="email" id="email" name="email" placeholder="example@company.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">{{ _('كلمة المرور') }}</label>
+                    <input type="password" id="password" name="password" placeholder="••••••••" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    <span>{{ _('دخول') }}</span>
+                    <i class="fas {{ 'fa-arrow-left' if current_lang == 'ar' else 'fa-arrow-right' }}"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- زر تحميل التطبيق العائم -->
+    <button class="download-app-fab" onclick="openDownloadModal()" title="{{ _('تحميل التطبيق') }}">
+        <i class="fas fa-download"></i>
+    </button>
+
+    <!-- نافذة تحميل التطبيق -->
+    <div id="downloadModal" class="download-modal">
+        <div class="download-modal-content">
+            <span class="close-modal" onclick="closeDownloadModal()">&times;</span>
+
+            <div class="download-modal-header">
+                <h2>
+                    <i class="fas fa-mobile-alt"></i>
+                    {{ _('تحميل التطبيق') }}
+                </h2>
+                <p>{{ _('اختر نوع الجهاز لتحميل التطبيق') }}</p>
+            </div>
+
+            <div class="download-modal-body">
+                <div class="download-options">
+                    <!-- خيار الموبايل -->
+                    <div class="download-option" onclick="showMobileInstructions()">
+                        <i class="fas fa-mobile-alt"></i>
+                        <h3>{{ _('للموبايل') }}</h3>
+                        <p>Android / iPhone</p>
+                    </div>
+
+                    <!-- خيار الكمبيوتر -->
+                    <div class="download-option" onclick="showDesktopInstructions()">
+                        <i class="fas fa-desktop"></i>
+                        <h3>{{ _('للكمبيوتر') }}</h3>
+                        <p>Windows / Mac / Linux</p>
+                    </div>
+                </div>
+
+                <!-- تعليمات الموبايل -->
+                <div id="mobileInstructions" class="download-instructions" style="display: none;">
+                    <h4><i class="fas fa-info-circle"></i> {{ _('خطوات التثبيت على الموبايل') }}</h4>
+                    <div id="androidInstructions">
+                        <h5 style="color: #22c55e; margin-bottom: 0.5rem;">📱 Android (Chrome):</h5>
+                        <ol>
+                            <li>{{ _('اضغط على القائمة (⋮) في المتصفح') }}</li>
+                            <li>{{ _('اختر "إضافة إلى الشاشة الرئيسية"') }}</li>
+                            <li>{{ _('اضغط "إضافة"') }}</li>
+                            <li>{{ _('تم! التطبيق الآن على شاشتك الرئيسية') }}</li>
+                        </ol>
+                    </div>
+                    <div style="margin-top: 1rem;">
+                        <h5 style="color: #60a5fa; margin-bottom: 0.5rem;">🍎 iPhone (Safari):</h5>
+                        <ol>
+                            <li>{{ _('اضغط على زر المشاركة (⬆️)') }}</li>
+                            <li>{{ _('اختر "Add to Home Screen"') }}</li>
+                            <li>{{ _('اضغط "Add"') }}</li>
+                            <li>{{ _('تم! التطبيق جاهز') }}</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <!-- تعليمات الكمبيوتر -->
+                <div id="desktopInstructions" class="download-instructions" style="display: none;">
+                    <h4><i class="fas fa-info-circle"></i> {{ _('خطوات التثبيت على الكمبيوتر') }}</h4>
+                    <div>
+                        <h5 style="color: #6366f1; margin-bottom: 0.5rem;">💻 Chrome / Edge:</h5>
+                        <ol>
+                            <li>{{ _('اضغط على أيقونة التثبيت (+) في شريط العنوان') }}</li>
+                            <li>{{ _('أو اضغط القائمة (⋮) → "تثبيت التطبيق"') }}</li>
+                            <li>{{ _('اضغط "تثبيت"') }}</li>
+                            <li>{{ _('التطبيق سيفتح في نافذة مستقلة!') }}</li>
+                        </ol>
+                    </div>
+                    <div
+                        style="margin-top: 1rem; padding: 1rem; background: rgba(99, 102, 241, 0.1); border-radius: 8px;">
+                        <p style="color: #a5b4fc; font-size: 0.85rem; margin: 0;">
+                            <i class="fas fa-lightbulb"></i>
+                            <strong>{{ _('نصيحة:') }}</strong>
+                            {{ _('بعد التثبيت، التطبيق سيعمل مثل برنامج عادي على جهازك!') }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/download-modal.css') }}">
+
+    <script>
+        function openDownloadModal() {
+            document.getElementById('downloadModal').style.display = 'block';
+        }
+
+        function closeDownloadModal() {
+            document.getElementById('downloadModal').style.display = 'none';
+            document.getElementById('mobileInstructions').style.display = 'none';
+            document.getElementById('desktopInstructions').style.display = 'none';
+        }
+
+        function showMobileInstructions() {
+            document.getElementById('mobileInstructions').style.display = 'block';
+            document.getElementById('desktopInstructions').style.display = 'none';
+        }
+
+        function showDesktopInstructions() {
+            document.getElementById('desktopInstructions').style.display = 'block';
+            document.getElementById('mobileInstructions').style.display = 'none';
+        }
+
+        // إغلاق عند الضغط خارج النافذة
+        window.onclick = function (event) {
+            const modal = document.getElementById('downloadModal');
+            if (event.target == modal) {
+                closeDownloadModal();
+            }
+        }
+
+        // اكتشاف إذا كان التطبيق قابل للتثبيت
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+
+            // إظهار الزر بشكل بارز
+            const fabBtn = document.querySelector('.download-app-fab');
+            if (fabBtn) {
+                fabBtn.style.animation = 'pulse 2s infinite';
+            }
+        });
+    </script>
+
+    <style>
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+                box-shadow: 0 0 30px rgba(99, 102, 241, 0.8);
+            }
+        }
+    </style>
+
+    <!-- تسجيل Service Worker للـ PWA -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/static/service-worker.js')
+                    .then(registration => {
+                        console.log('✅ Service Worker registered successfully:', registration);
+                    })
+                    .catch(error => {
+                        console.log('❌ Service Worker registration failed:', error);
+                    });
+            });
+        }
+    </script>
+</body>
+
+</html>

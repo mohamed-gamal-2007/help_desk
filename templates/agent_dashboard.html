@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="{{ current_lang }}" dir="{{ 'rtl' if current_lang == 'ar' else 'ltr' }}">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة الموظف | {{ company_name }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.05);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: #0f172a;
+            color: white;
+            font-family: 'Cairo', sans-serif;
+            overflow-x: hidden;
+            padding-top: 80px;
+        }
+
+        /* Layout */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 3rem;
+            background: rgba(15, 23, 42, 0.95);
+            border-bottom: 1px solid var(--glass-border);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Stats Cards */
+        .stats-container {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 3rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .stat-card {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01));
+            border: 1px solid var(--glass-border);
+            padding: 1.5rem 2rem;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            min-width: 250px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+        }
+
+        /* Table Styles */
+        .table-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+            margin-top: 2rem;
+        }
+
+        .table-header-title {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--glass-border);
+            font-size: 1.2rem;
+            font-weight: bold;
+            background: rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: {
+                    {
+                    'right' if current_lang=='ar' else 'left'
+                }
+            }
+
+            ;
+            padding: 1.2rem;
+            background: rgba(255, 255, 255, 0.03);
+            color: #94a3b8;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        td {
+            padding: 1.2rem;
+            border-bottom: 1px solid var(--glass-border);
+            font-size: 1rem;
+            vertical-align: middle;
+        }
+
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        /* Badges & Buttons */
+        .badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: normal;
+        }
+
+        .badge-success {
+            background: rgba(34, 197, 94, 0.2);
+            color: #4ade80;
+        }
+
+        .badge-warning {
+            background: rgba(245, 158, 11, 0.2);
+            color: #fbbf24;
+        }
+
+        .badge-error {
+            background: rgba(239, 68, 68, 0.2);
+            color: #f87171;
+        }
+
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0.6rem 1.2rem;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-join {
+            background: #22c55e;
+            color: white;
+        }
+
+        .btn-join:hover {
+            background: #16a34a;
+        }
+
+        .btn-continue {
+            background: #6366f1;
+            color: white;
+        }
+
+        .btn-continue:hover {
+            background: #4f46e5;
+        }
+
+        .btn-locked {
+            background: transparent;
+            border: 1px solid var(--glass-border);
+            color: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        /* Notification Dropdown */
+        .notif-dropdown {
+            position: absolute;
+            top: 40px;
+            left: 0;
+            width: 300px;
+            background: #1e293b;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 2000;
+            overflow: hidden;
+        }
+
+        .notif-header {
+            padding: 10px 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.9rem;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .notif-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .notif-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .notif-item:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .notif-item.new {
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .notif-empty {
+            padding: 20px;
+            text-align: center;
+            color: #64748b;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- 1. Header (Full Width) -->
+    <header class="page-header">
+        <div style="display: flex; align-items: center; gap: 1rem;">
+            <div
+                style="width: 45px; height: 45px; background: linear-gradient(135deg, #6366f1, #8b5cf6); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem;">
+                {{ user.username[0]|upper }}
+            </div>
+            <div>
+                <div style="font-size: 0.85rem; color: #94a3b8;">{{ _('أهلاً بك،') }}</div>
+                <div style="font-weight: bold; font-size: 1rem;">{{ user.username }}</div>
+            </div>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 1.5rem;">
+            <!-- Language Switcher -->
+            <a href="/set_lang/{{ 'en' if current_lang == 'ar' else 'ar' }}" class="lang-btn">
+                <span>{{ 'English' if current_lang == 'ar' else 'العربية' }}</span>
+                <i class="fas fa-globe"></i>
+            </a>
+
+            <!-- Notification Bell & Dropdown -->
+            <div style="position: relative;">
+                <div id="notifBell"
+                    style="cursor: pointer; color: #94a3b8; font-size: 1.2rem; transition: 0.3s; padding: 5px;">
+                    <i class="fas fa-bell"></i>
+                    <span id="notifBadge"
+                        style="display: none; position: absolute; top: 0; right: 0; width: 10px; height: 10px; background: #ef4444; border-radius: 50%; border: 2px solid #0f172a;"></span>
+                </div>
+
+                <div id="notifDropdown" class="notif-dropdown">
+                    <div class="notif-header">
+                        <span>{{ _('الإشعارات') }}</span>
+                        <span style="font-size: 0.7rem; color: #64748b; cursor: pointer;" onclick="clearNotifs()">{{
+                            _('مسح الكل') }}</span>
+                    </div>
+                    <div id="notifList" class="notif-list">
+                        <!-- Notifications will appear here -->
+                    </div>
+                </div>
+            </div>
+
+            <a href="/logout" class="btn"
+                style="background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); color: #f87171; padding: 0.5rem 1.2rem; text-decoration: none; border-radius: 8px; transition: 0.3s;">
+                <i class="fas fa-sign-out-alt"></i> {{ _('تسجيل خروج') }}
+            </a>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- 2. Centered Stats Bar -->
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-icon" style="background: rgba(99, 102, 241, 0.2); color: #818cf8;">
+                    <i class="fas fa-check-double"></i>
+                </div>
+                <div>
+                    <h3 style="margin: 0; font-size: 2rem;">{{ stats.resolved }}</h3>
+                    <span style="color: #94a3b8;">{{ _('إجمالي التذاكر المحلولة') }}</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24;">
+                    <i class="fas fa-headset"></i>
+                </div>
+                <div>
+                    <h3 style="margin: 0; font-size: 2rem;">{{ stats.active }}</h3>
+                    <span style="color: #94a3b8;">{{ _('تذاكر قيد العمل (معك)') }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Unified Table -->
+        <div class="table-card">
+            <div class="table-header-title">
+                <i class="fas fa-list-ul"></i> {{ _('قائمة التذاكر النشطة') }}
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>{{ _('رقم التذكرة') }}</th>
+                        <th>{{ _('العميل') }}</th>
+                        <th>{{ _('المنتج') }}</th>
+                        <th>{{ _('الحالة / المسؤول') }}</th>
+                        <th>{{ _('منذ') }}</th>
+                        <th style="text-align: center;">{{ _('الإجراء') }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ticket in tickets %}
+                    <tr>
+                        <td style="font-family: monospace; font-size: 1.1rem;">#{{ ticket.id }}</td>
+                        <td>
+                            <div style="font-weight: bold;">{{ ticket.customer.username }}</div>
+                            <div style="font-size: 0.85rem; color: #94a3b8;">{{ ticket.customer.email }}</div>
+                        </td>
+                        <td>{{ ticket.product.name if ticket.product else _('عام') }}</td>
+                        <td>
+                            {% if not ticket.employee_id %}
+                            <span class="badge badge-error">{{ _('انتظار (جديد)') }}</span>
+                            {% elif ticket.employee_id == user.id %}
+                            <span class="badge badge-warning">{{ _('معك الآن') }}</span>
+                            {% else %}
+                            <span class="badge" style="background: rgba(255,255,255,0.1); color: #ccc;">
+                                <i class="fas fa-user-lock"></i> {{ ticket.employee.username }}
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td dir="ltr" style="text-align: right;">{{ ticket.created_at.strftime('%I:%M %p') }}</td>
+                        <td style="text-align: center;">
+                            {% if not ticket.employee_id %}
+                            <a href="/ticket/join/{{ ticket.id }}" class="btn-action btn-join">
+                                <i class="fas fa-hand-paper"></i> {{ _('استلام التذكرة') }}
+                            </a>
+                            {% elif ticket.employee_id == user.id %}
+                            <a href="/chat?ticket_id={{ ticket.id }}" class="btn-action btn-continue">
+                                <i class="fas fa-comment-dots"></i> {{ _('متابعة') }}
+                            </a>
+                            {% else %}
+                            <button class="btn-action btn-locked" disabled title="{{ _('هذه التذكرة مع زميل آخر') }}">
+                                <i class="fas fa-lock"></i> {{ _('محجوز') }}
+                            </button>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 4rem; color: #94a3b8;">
+                            <i class="fas fa-mug-hot fa-3x"
+                                style="margin-bottom: 1.5rem; display: block; opacity: 0.5;"></i>
+                            <div style="font-size: 1.2rem;">{{ _('لا توجد تذاكر نشطة حالياً') }}</div>
+                            <div style="font-size: 0.9rem;">{{ _('استمتع بوقتك حتى وصول عميل جديد!') }}</div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Add Customer Modal Removed -->
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+        // الانضمام لغرفة الإشعارات الشخصية
+        socket.emit('join', {});
+
+        // التحديث التلقائي للوحة
+        socket.on('new_ticket', () => location.reload());
+        socket.on('update_dashboard', () => location.reload());
+
+        // استقبال التنبيهات الخاصة
+        socket.on('notification', function (data) {
+            // حفظ الإشعار في localStorage
+            let notifs = JSON.parse(localStorage.getItem('notifs') || '[]');
+            notifs.unshift({
+                id: Date.now(),
+                ticket_id: data.ticket_id,
+                customer: data.customer,
+                time: data.time,
+                is_read: false
+            });
+            localStorage.setItem('notifs', JSON.stringify(notifs));
+
+            renderNotifications();
+
+            // إظهار النقطة الحمراء
+            document.getElementById('notifBadge').style.display = 'block';
+
+            // إظهار تنبيه مرئي بسيط (Toast)
+            if (Notification.permission === "granted") {
+                new Notification(data.title, { body: data.message });
+            }
+
+            // تحديث القائمة فوراً لرؤية تغيير الحالة في الجدول
+            setTimeout(() => location.reload(), 1500);
+        });
+
+        function renderNotifications() {
+            const list = document.getElementById('notifList');
+            const notifs = JSON.parse(localStorage.getItem('notifs') || '[]');
+            const badge = document.getElementById('notifBadge');
+
+            if (notifs.length === 0) {
+                list.innerHTML = '<div class="notif-empty">لا توجد إشعارات حالياً</div>';
+                badge.style.display = 'none';
+                return;
+            }
+
+            let hasUnread = notifs.some(n => !n.is_read);
+            badge.style.display = hasUnread ? 'block' : 'none';
+
+            list.innerHTML = notifs.map(n => `
+                <div class="notif-item ${n.is_read ? '' : 'new'}" onclick="handleNotifClick(${n.id}, ${n.ticket_id})">
+                    <div style="font-size: 0.85rem; font-weight: bold; color: white; margin-bottom: 3px;">رد من ${n.customer}</div>
+                    <div style="font-size: 0.75rem; color: #94a3b8;">قام بالرد على التذكرة #${n.ticket_id}</div>
+                    <div style="font-size: 0.7rem; color: #64748b; margin-top: 5px;">${n.time}</div>
+                </div>
+            `).join('');
+        }
+
+        function handleNotifClick(notifId, ticketId) {
+            let notifs = JSON.parse(localStorage.getItem('notifs') || '[]');
+            notifs = notifs.map(n => n.id === notifId ? { ...n, is_read: true } : n);
+            localStorage.setItem('notifs', JSON.stringify(notifs));
+            location.href = `/chat?ticket_id=${ticketId}`;
+        }
+
+        function clearNotifs() {
+            localStorage.setItem('notifs', '[]');
+            renderNotifications();
+        }
+
+        // تبديل ظهور القائمة
+        const bell = document.getElementById('notifBell');
+        const dropdown = document.getElementById('notifDropdown');
+
+        bell.addEventListener('click', (e) => {
+            e.stopPropagation();
+            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+            renderNotifications();
+        });
+
+        document.addEventListener('click', () => {
+            dropdown.style.display = 'none';
+        });
+
+        // تشغيل أولي
+        renderNotifications();
+    </script>
+</body>
+</body>
+
+</html>

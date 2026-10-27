@@ -1,0 +1,256 @@
+/* Download App Button & Modal Styles */
+
+/* زر تحميل التطبيق العائم */
+.download-app-fab {
+    position: fixed;
+    bottom: 30px;
+    left: 30px;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    box-shadow: 0 10px 25px rgba(99, 102, 241, 0.5);
+    transition: all 0.3s ease;
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+[dir="rtl"] .download-app-fab {
+    left: auto;
+    right: 30px;
+}
+
+.download-app-fab:hover {
+    transform: scale(1.1) translateY(-3px);
+    box-shadow: 0 15px 35px rgba(99, 102, 241, 0.7);
+}
+
+.download-app-fab:active {
+    transform: scale(0.95);
+}
+
+/* Modal للتحميل */
+.download-modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    animation: fadeIn 0.3s ease;
+}
+
+.download-modal-content {
+    position: relative;
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    margin: 5% auto;
+    padding: 0;
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    border-radius: 24px;
+    width: 90%;
+    max-width: 600px;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+    animation: slideIn 0.3s ease;
+}
+
+.download-modal-header {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    padding: 2rem;
+    border-radius: 24px 24px 0 0;
+    text-align: center;
+}
+
+.download-modal-header h2 {
+    color: white;
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.download-modal-header p {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.95rem;
+}
+
+.download-modal-body {
+    padding: 2.5rem;
+}
+
+.download-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.download-option {
+    background: rgba(99, 102, 241, 0.1);
+    border: 2px solid rgba(99, 102, 241, 0.3);
+    border-radius: 16px;
+    padding: 2rem 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    color: white;
+}
+
+.download-option:hover {
+    background: rgba(99, 102, 241, 0.2);
+    border-color: #6366f1;
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+}
+
+.download-option i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    display: block;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.download-option h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    color: white;
+}
+
+.download-option p {
+    font-size: 0.85rem;
+    color: #94a3b8;
+    margin-bottom: 0;
+}
+
+.download-instructions {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.download-instructions h4 {
+    color: #6366f1;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.download-instructions ol {
+    color: #cbd5e1;
+    font-size: 0.9rem;
+    line-height: 1.8;
+    padding-right: 1.5rem;
+}
+
+[dir="ltr"] .download-instructions ol {
+    padding-right: 0;
+    padding-left: 1.5rem;
+}
+
+.download-instructions li {
+    margin-bottom: 0.5rem;
+}
+
+.close-modal {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    color: white;
+    font-size: 2rem;
+    font-weight: bold;
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+[dir="rtl"] .close-modal {
+    left: auto;
+    right: 1rem;
+}
+
+.close-modal:hover {
+    background: rgba(239, 68, 68, 0.5);
+    transform: rotate(90deg);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Mobile Responsive */
+@media screen and (max-width: 640px) {
+    .download-modal-content {
+        width: 95%;
+        margin: 10% auto;
+    }
+
+    .download-options {
+        grid-template-columns: 1fr;
+    }
+
+    .download-option {
+        padding: 1.5rem 1rem;
+    }
+
+    .download-option i {
+        font-size: 2.5rem;
+    }
+
+    .download-modal-body {
+        padding: 1.5rem;
+    }
+
+    .download-app-fab {
+        width: 50px;
+        height: 50px;
+        font-size: 1.2rem;
+        bottom: 20px;
+        left: 20px;
+    }
+
+    [dir="rtl"] .download-app-fab {
+        right: 20px;
+    }
+}

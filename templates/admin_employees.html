@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="{{ current_lang }}" dir="{{ 'rtl' if current_lang == 'ar' else 'ltr' }}">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ _('إدارة الموظفين') }} | {{ company_name }}</title>
+    <!-- Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Inter:wght@400;600;700&display=swap"
+        rel="stylesheet">
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <!-- Custom Modal Style -->
+    <style>
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            margin: 10% auto;
+            border: 1px solid var(--glass-border);
+            width: 50%;
+            max-width: 500px;
+        }
+    </style>
+</head>
+
+<body style="display: block; overflow: hidden;">
+
+    <div class="dashboard-wrapper">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <ul class="nav-menu">
+                <li class="nav-item"><a href="/admin" class="nav-link">
+                        <span>{{ _('الرئيسية') }}</span> <i class="fas fa-home"></i></a></li>
+                <li class="nav-item"><a href="/admin/tickets" class="nav-link">
+                        <span>{{ _('التذاكر') }}</span> <i class="fas fa-ticket-alt"></i></a></li>
+                <li class="nav-item"><a href="/admin/employees" class="nav-link active">
+                        <span>{{ _('الموظفين') }}</span> <i class="fas fa-user-tie"></i></a></li>
+                <li class="nav-item"><a href="/admin/customers" class="nav-link">
+                        <span>{{ _('العملاء') }}</span> <i class="fas fa-users"></i></a></li>
+                <li class="nav-item"><a href="/admin/reports" class="nav-link">
+                        <span>{{ _('التقارير') }}</span> <i class="fas fa-chart-bar"></i></a></li>
+                <li class="nav-item"><a href="/admin/settings" class="nav-link">
+                        <span>{{ _('الإعدادات') }}</span> <i class="fas fa-cog"></i></a></li>
+
+                <li class="nav-item" style="margin-top: auto;">
+                    <a href="/logout" class="nav-link logout">
+                        <span>{{ _('تسجيل الخروج') }}</span> <i class="fas fa-sign-out-alt"></i>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <header class="top-bar">
+                <div class="search-bar">
+                    <h1>{{ _('إدارة الموظفين') }}</h1>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <a href="/set_lang/{{ 'en' if current_lang == 'ar' else 'ar' }}" class="lang-btn">
+                        <span>{{ 'English' if current_lang == 'ar' else 'العربية' }}</span>
+                        <i class="fas fa-globe"></i>
+                    </a>
+                    <button class="btn btn-primary" onclick="openModal()" style="width: auto;">
+                        <i class="fas fa-plus"></i> {{ _('إضافة موظف جديد') }}
+                    </button>
+                </div>
+            </header>
+
+            <!-- Employees Table -->
+            <div class="data-table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="padding: 1rem;">{{ _('الاسم') }}</th>
+                            <th style="padding: 1rem;">{{ _('البريد الإلكتروني') }}</th>
+                            <th style="padding: 1rem;">{{ _('الهاتف') }}</th>
+                            <th>{{ _('إجراء') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for emp in employees %}
+                        <tr>
+                            <td style="padding: 1rem; font-weight: bold;">{{ emp.username }}</td>
+                            <td style="padding: 1rem;">{{ emp.email }}</td>
+                            <td style="padding: 1rem;">{{ emp.phone or '---' }}</td>
+                            <td>
+                                <button class="btn-action btn-edit"
+                                    onclick="openEditModal({{ emp.id }}, '{{ emp.username }}', '{{ emp.email }}', '{{ emp.phone }}')"
+                                    title="{{ _('تعديل') }}">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+
+                                <a href="/admin/users/toggle_block/{{ emp.id }}" class="btn"
+                                    style="background: {{ 'rgba(239, 68, 68, 0.15)' if not emp.is_blocked else 'rgba(34, 197, 94, 0.15)' }}; color: {{ '#f87171' if not emp.is_blocked else '#4ade80' }}; padding: 0.3rem 0.6rem; font-size: 0.8rem; width: auto; margin-left: 5px; text-decoration: none; display: inline-flex;">
+                                    <i class="fas {{ 'fa-ban' if not emp.is_blocked else 'fa-unlock' }}"></i>
+                                </a>
+
+                                <a href="/admin/users/delete/{{ emp.id }}"
+                                    onclick="return confirm('{{ _('هل أنت متأكد من حذف هذا الموظف؟') }}')" class="btn"
+                                    style="background: rgba(239, 68, 68, 0.1); color: var(--error-color); padding: 0.3rem 0.6rem; font-size: 0.8rem; width: auto; display: inline-flex; text-decoration: none;">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="4" style="text-align: center; padding: 2rem;">{{ _('لا يوجد موظفين حالياً') }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal Form -->
+    <div id="addEmployeeModal" class="modal">
+        <div class="glass-card modal-content">
+            <div class="header" style="margin-bottom: 1.5rem; display: flex; justify-content: space-between;">
+                <h2>{{ _('بيانات الموظف الجديد') }}</h2>
+                <span onclick="closeModal()" style="cursor: pointer; font-size: 1.5rem;">&times;</span>
+            </div>
+            <form action="/admin/employees/add" method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                <div class="form-group">
+                    <label>{{ _('اسم الموظف') }}</label>
+                    <input type="text" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label>{{ _('البريد الإلكتروني') }}</label>
+                    <input type="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label>{{ _('رقم الهاتف') }}</label>
+                    <input type="text" name="phone">
+                </div>
+                <div class="form-group">
+                    <label>{{ _('كلمة المرور') }}</label>
+                    <input type="password" name="password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">{{ _('تأكيد وإضافة') }}</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Employee Modal -->
+    <div id="editEmployeeModal" class="modal">
+        <div class="glass-card modal-content">
+            <div class="header" style="margin-bottom: 1.5rem; display: flex; justify-content: space-between;">
+                <h2>{{ _('تعديل بيانات الموظف') }}</h2>
+                <span onclick="closeEditModal()" style="cursor: pointer; font-size: 1.5rem;">&times;</span>
+            </div>
+            <form action="/admin/users/edit" method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                <input type="hidden" name="user_id" id="edit_user_id">
+                <div class="form-group">
+                    <label>{{ _('اسم الموظف') }}</label>
+                    <input type="text" name="username" id="edit_username" required>
+                </div>
+                <div class="form-group">
+                    <label>{{ _('البريد الإلكتروني') }}</label>
+                    <input type="email" name="email" id="edit_email" required>
+                </div>
+                <div class="form-group">
+                    <label>{{ _('رقم الهاتف') }}</label>
+                    <input type="text" name="phone" id="edit_phone">
+                </div>
+                <div class="form-group">
+                    <label>{{ _('كلمة المرور الجديدة (اتركها فارغة لعدم التغيير)') }}</label>
+                    <input type="password" name="password" placeholder="******">
+                </div>
+                <button type="submit" class="btn btn-primary">{{ _('حفظ التغييرات') }}</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openModal() {
+            document.getElementById('addEmployeeModal').style.display = 'block';
+        }
+        function closeModal() {
+            document.getElementById('addEmployeeModal').style.display = 'none';
+        }
+
+        function openEditModal(id, username, email, phone) {
+            document.getElementById('edit_user_id').value = id;
+            document.getElementById('edit_username').value = username;
+            document.getElementById('edit_email').value = email;
+            document.getElementById('edit_phone').value = (phone && phone !== 'None') ? phone : '';
+            document.getElementById('editEmployeeModal').style.display = 'block';
+        }
+
+        function closeEditModal() {
+            document.getElementById('editEmployeeModal').style.display = 'none';
+        }
+
+        // إغلاق النافذة عند الضغط خارجها
+        window.onclick = function (event) {
+            if (event.target == document.getElementById('addEmployeeModal')) {
+                closeModal();
+            }
+            if (event.target == document.getElementById('editEmployeeModal')) {
+                closeEditModal();
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,288 @@
+<html lang="{{ current_lang }}" dir="{{ 'rtl' if current_lang == 'ar' else 'ltr' }}">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ _('التقارير والإحصائيات') }} | {{ company_name }}</title>
+    <!-- Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Inter:wght@400;600;700&display=swap"
+        rel="stylesheet">
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <style>
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            margin: 10% auto;
+            border: 1px solid var(--glass-border);
+            width: 50%;
+            max-width: 500px;
+        }
+    </style>
+</head>
+
+<body style="display: block; overflow: hidden;">
+
+    <div class="dashboard-wrapper">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <ul class="nav-menu">
+                <li class="nav-item"><a href="/admin" class="nav-link">
+                        <span>{{ _('الرئيسية') }}</span> <i class="fas fa-home"></i></a></li>
+                <li class="nav-item"><a href="/admin/tickets" class="nav-link">
+                        <span>{{ _('التذاكر') }}</span> <i class="fas fa-ticket-alt"></i></a></li>
+                <li class="nav-item"><a href="/admin/employees" class="nav-link">
+                        <span>{{ _('الموظفين') }}</span> <i class="fas fa-user-tie"></i></a></li>
+                <li class="nav-item"><a href="/admin/customers" class="nav-link active">
+                        <span>{{ _('العملاء') }}</span> <i class="fas fa-users"></i></a></li>
+                <li class="nav-item"><a href="/admin/reports" class="nav-link">
+                        <span>{{ _('التقارير') }}</span> <i class="fas fa-chart-bar"></i></a></li>
+                <li class="nav-item"><a href="/admin/settings" class="nav-link">
+                        <span>{{ _('الإعدادات') }}</span> <i class="fas fa-cog"></i></a></li>
+
+                <li class="nav-item" style="margin-top: auto;">
+                    <a href="/logout" class="nav-link logout">
+                        <span>{{ _('تسجيل الخروج') }}</span> <i class="fas fa-sign-out-alt"></i>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <header class="top-bar">
+                <div class="search-bar">
+                    <h1 style="font-size: 1.5rem; -webkit-text-fill-color: initial; background: none; color: white;">
+                        {{ _('إدارة العملاء') }}</h1>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <a href="/set_lang/{{ 'en' if current_lang == 'ar' else 'ar' }}" class="lang-btn">
+                        <span>{{ 'English' if current_lang == 'ar' else 'العربية' }}</span>
+                        <i class="fas fa-globe"></i>
+                    </a>
+                    <button onclick="openModal()" class="btn btn-primary" style="width: auto;">
+                        <i class="fas fa-plus"></i> {{ _('إضافة عميل جديد') }}
+                    </button>
+                </div>
+            </header>
+
+            <!-- Customers Table -->
+            <div class="data-table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>{{ _('الاسم') }}</th>
+                            <th>{{ _('الاشتراكات/المنتجات') }}</th>
+                            <th>{{ _('البريد الإلكتروني') }}</th>
+                            <th>{{ _('الهاتف') }}</th>
+                            <th>{{ _('معرف العميل') }}</th>
+                            <th>{{ _('إجراء') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for cust in customers %}
+                        <tr>
+                            <td style="font-weight: bold;">{{ cust.username }}</td>
+                            <td>
+                                <!-- دعم منتجات متعددة مستقبلاً -->
+                                {% if cust.product %}
+                                <span class="badge" style="background: rgba(255,255,255,0.1);">{{ cust.product.name
+                                    }}</span>
+                                {% else %}
+                                <span style="color: var(--text-muted);">---</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ cust.email }}</td>
+                            <td>{{ cust.phone if cust.phone else '---' }}</td>
+                            <td>{{ cust.id }}</td>
+                            <td>
+                                <button
+                                    onclick="openEditModal({{ cust.id }}, '{{ cust.username }}', '{{ cust.email }}', '{{ cust.phone }}')"
+                                    class="btn"
+                                    style="background: rgba(99, 102, 241, 0.1); color: var(--primary-color); padding: 0.3rem 0.6rem; font-size: 0.8rem; width: auto; margin-left: 5px;">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+
+                                <a href="/admin/users/toggle_block/{{ cust.id }}" class="btn"
+                                    style="background: {{ 'rgba(239, 68, 68, 0.15)' if not cust.is_blocked else 'rgba(34, 197, 94, 0.15)' }}; color: {{ '#f87171' if not cust.is_blocked else '#4ade80' }}; padding: 0.3rem 0.6rem; font-size: 0.8rem; width: auto; margin-left: 5px; text-decoration: none; display: inline-flex;">
+                                    <i class="fas {{ 'fa-ban' if not cust.is_blocked else 'fa-unlock' }}"></i>
+                                </a>
+
+                                <a href="/admin/users/delete/{{ cust.id }}"
+                                    onclick="return confirm('{{ _('هل أنت متأكد من حذف هذا العميل؟') }}')" class="btn"
+                                    style="background: rgba(239, 68, 68, 0.1); color: var(--error-color); padding: 0.3rem 0.6rem; font-size: 0.8rem; width: auto; display: inline-flex; text-decoration: none;">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 2rem;">{{ _('لا يوجد عملاء حالياً') }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal Form (Add) -->
+    <div id="addCustomerModal" class="modal">
+        <div class="glass-card modal-content">
+            <div class="header" style="margin-bottom: 1.5rem; display: flex; justify-content: space-between;">
+                <h2>{{ _('بيانات العميل الجديد') }}</h2>
+                <span onclick="closeModal()" style="cursor: pointer; font-size: 1.5rem;">&times;</span>
+            </div>
+            <form action="/admin/customers/add" method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                <div class="form-group">
+                    <label>{{ _('اسم العميل') }}</label>
+                    <input type="text" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label>{{ _('المنتج الرئيسي') }}</label>
+                    <select name="product_id" id="productSelect" onchange="toggleProductInput()"
+                        style="width: 100%; padding: 0.8rem; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 8px; color: white;">
+                        <option value="">{{ _('اختر المنتج...') }}</option>
+                        {% for prod in products %}
+                        <option value="{{ prod.id }}">{{ prod.name }}</option>
+                        {% endfor %}
+                        <option value="other" style="color: var(--accent-color); font-weight: bold;">+ {{ _('منتج جديد
+                            (أخرى)') }}
+                        </option>
+                    </select>
+                    <input type="text" name="new_product_name" id="newProductInput"
+                        placeholder="{{ _('اكتب اسم المنتج الجديد...') }}"
+                        style="display: none; margin-top: 10px; width: 100%; padding: 0.8rem; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 8px; color: white;">
+                </div>
+                <div class="form-group">
+                    <label>{{ _('البريد الإلكتروني') }}</label>
+                    <input type="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label>{{ _('رقم الهاتف') }}</label>
+                    <input type="text" name="phone">
+                </div>
+                <div class="form-group">
+                    <label>{{ _('تعيين موظف خاص (اختياري)') }}</label>
+                    <select name="assigned_agent"
+                        style="width: 100%; padding: 0.8rem; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 8px; color: white;">
+                        <option value="">{{ _('بدون تعيين (عام)') }}</option>
+                        {% for emp in employees %}
+                        <option value="{{ emp.id }}">{{ emp.username }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>{{ _('كلمة المرور') }}</label>
+                    <input type="password" name="password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">{{ _('تأكيد وإضافة') }}</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Customer Modal -->
+    <div id="editCustomerModal" class="modal">
+        <div class="glass-card modal-content">
+            <div class="header" style="margin-bottom: 1.5rem; display: flex; justify-content: space-between;">
+                <h2>{{ _('تعديل بيانات العميل') }}</h2>
+                <span onclick="closeEditModal()" style="cursor: pointer; font-size: 1.5rem;">&times;</span>
+            </div>
+            <form action="/admin/users/edit" method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                <input type="hidden" name="user_id" id="edit_user_id">
+                <div class="form-group">
+                    <label>{{ _('اسم العميل') }}</label>
+                    <input type="text" name="username" id="edit_username" required>
+                </div>
+
+                <!-- تعديل الموظف المسؤول -->
+                <div class="form-group">
+                    <label>{{ _('الموظف المسؤول') }}</label>
+                    <select name="assigned_agent" id="edit_assigned_agent"
+                        style="width: 100%; padding: 0.8rem; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 8px; color: white;">
+                        <option value="">{{ _('بدون تعيين (عام)') }}</option>
+                        {% for emp in employees %}
+                        <option value="{{ emp.id }}">{{ emp.username }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>{{ _('البريد الإلكتروني') }}</label>
+                    <input type="email" name="email" id="edit_email" required>
+                </div>
+                <div class="form-group">
+                    <label>{{ _('رقم الهاتف') }}</label>
+                    <input type="text" name="phone" id="edit_phone">
+                </div>
+                <div class="form-group">
+                    <label>{{ _('كلمة المرور الجديدة (اتركها فارغة لعدم التغيير)') }}</label>
+                    <input type="password" name="password" placeholder="******">
+                </div>
+                <button type="submit" class="btn btn-primary">{{ _('حفظ التغييرات') }}</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openModal() {
+            document.getElementById('addCustomerModal').style.display = 'block';
+        }
+        function closeModal() {
+            document.getElementById('addCustomerModal').style.display = 'none';
+        }
+
+        function openEditModal(id, username, email, phone) {
+            document.getElementById('edit_user_id').value = id;
+            document.getElementById('edit_username').value = username;
+            document.getElementById('edit_email').value = email;
+            document.getElementById('edit_phone').value = (phone && phone !== 'None') ? phone : '';
+            document.getElementById('editCustomerModal').style.display = 'block';
+        }
+
+        function closeEditModal() {
+            document.getElementById('editCustomerModal').style.display = 'none';
+        }
+
+        window.onclick = function (event) {
+            if (event.target == document.getElementById('addCustomerModal')) {
+                closeModal();
+            }
+            if (event.target == document.getElementById('editCustomerModal')) {
+                closeEditModal();
+            }
+        }
+        function toggleProductInput() {
+            const select = document.getElementById('productSelect');
+            const input = document.getElementById('newProductInput');
+            if (select.value === 'other') {
+                input.style.display = 'block';
+                input.required = true;
+            } else {
+                input.style.display = 'none';
+                input.required = false;
+            }
+        }
+    </script>
+</body>
+
+</html>

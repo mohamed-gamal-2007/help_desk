@@ -1,0 +1,777 @@
+# Translations template for PROJECT.
+# Copyright (C) 2026 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-01-25 23:04+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.16.0\n"
+
+#: app.py:75
+msgid "عذراً، هذا الحساب محظور حالياً."
+msgstr ""
+
+#: app.py:88
+msgid "بيانات الدخول غير صحيحة"
+msgstr ""
+
+#: app.py:313
+msgid "تم تحديث إعدادات النظام بنجاح"
+msgstr ""
+
+#: app.py:330
+msgid "تم تحديث الملف الشخصي بنجاح"
+msgstr ""
+
+#: app.py:573
+msgid "رد على تذكرة معلقة"
+msgstr ""
+
+#: app.py:574
+#, python-format
+msgid "العميل %(customer)s رد على التذكرة #%(ticket_id)s"
+msgstr ""
+
+#: app.py:585 templates/admin_tickets.html:260 templates/admin_tickets.html:265
+#: templates/agent_dashboard.html:375 templates/chat.html:277
+#: templates/chat.html:430
+msgid "عام"
+msgstr ""
+
+#: templates/admin_customers.html:6 templates/admin_reports.html:80
+msgid "التقارير والإحصائيات"
+msgstr ""
+
+#: templates/admin_customers.html:50 templates/admin_dashboard.html:120
+#: templates/admin_employees.html:52 templates/admin_reports.html:59
+#: templates/admin_settings.html:47 templates/admin_tickets.html:167
+#: templates/agent_dashboard.html:265
+msgid "الرئيسية"
+msgstr ""
+
+#: templates/admin_customers.html:55 templates/admin_dashboard.html:122
+#: templates/admin_employees.html:54 templates/admin_reports.html:61
+#: templates/admin_settings.html:49 templates/admin_tickets.html:169
+msgid "التذاكر"
+msgstr ""
+
+#: templates/admin_customers.html:60 templates/admin_dashboard.html:124
+#: templates/admin_employees.html:56 templates/admin_reports.html:63
+#: templates/admin_settings.html:51 templates/admin_tickets.html:171
+msgid "الموظفين"
+msgstr ""
+
+#: templates/admin_customers.html:65 templates/admin_dashboard.html:126
+#: templates/admin_employees.html:58 templates/admin_reports.html:65
+#: templates/admin_settings.html:53 templates/admin_tickets.html:173
+msgid "العملاء"
+msgstr ""
+
+#: templates/admin_customers.html:70 templates/admin_dashboard.html:128
+#: templates/admin_employees.html:60 templates/admin_reports.html:67
+#: templates/admin_settings.html:55 templates/admin_tickets.html:175
+msgid "التقارير"
+msgstr ""
+
+#: templates/admin_customers.html:75 templates/admin_dashboard.html:130
+#: templates/admin_employees.html:62 templates/admin_reports.html:69
+#: templates/admin_settings.html:57 templates/admin_tickets.html:177
+msgid "الإعدادات"
+msgstr ""
+
+#: templates/admin_customers.html:81 templates/admin_employees.html:74
+#: templates/admin_reports.html:73 templates/admin_settings.html:61
+#: templates/admin_tickets.html:181
+msgid "تسجيل الخروج"
+msgstr ""
+
+#: templates/admin_customers.html:92
+msgid "إدارة العملاء"
+msgstr ""
+
+#: templates/admin_customers.html:101 templates/agent_dashboard.html:425
+msgid "إضافة عميل جديد"
+msgstr ""
+
+#: templates/admin_customers.html:111 templates/admin_employees.html:95
+#: templates/admin_settings.html:105
+msgid "الاسم"
+msgstr ""
+
+#: templates/admin_customers.html:112
+msgid "الاشتراكات/المنتجات"
+msgstr ""
+
+#: templates/admin_customers.html:113 templates/admin_customers.html:196
+#: templates/admin_customers.html:227 templates/admin_employees.html:97
+#: templates/admin_employees.html:158 templates/admin_employees.html:192
+#: templates/login.html:45
+msgid "البريد الإلكتروني"
+msgstr ""
+
+#: templates/admin_customers.html:114 templates/admin_employees.html:98
+msgid "الهاتف"
+msgstr ""
+
+#: templates/admin_customers.html:115
+msgid "معرف العميل"
+msgstr ""
+
+#: templates/admin_customers.html:116 templates/admin_employees.html:99
+msgid "إجراء"
+msgstr ""
+
+#: templates/admin_customers.html:149
+msgid "هل أنت متأكد من حذف هذا العميل؟"
+msgstr ""
+
+#: templates/admin_customers.html:157
+msgid "لا يوجد عملاء حالياً"
+msgstr ""
+
+#: templates/admin_customers.html:171
+msgid "بيانات العميل الجديد"
+msgstr ""
+
+#: templates/admin_customers.html:176 templates/admin_customers.html:222
+msgid "اسم العميل"
+msgstr ""
+
+#: templates/admin_customers.html:180
+msgid "المنتج الرئيسي"
+msgstr ""
+
+#: templates/admin_customers.html:183 templates/agent_dashboard.html:461
+msgid "اختر المنتج..."
+msgstr ""
+
+#: templates/admin_customers.html:187
+msgid ""
+"منتج جديد\n"
+"                            (أخرى)"
+msgstr ""
+
+#: templates/admin_customers.html:192
+msgid "اكتب اسم المنتج الجديد..."
+msgstr ""
+
+#: templates/admin_customers.html:200 templates/admin_customers.html:231
+#: templates/admin_employees.html:162 templates/admin_employees.html:196
+msgid "رقم الهاتف"
+msgstr ""
+
+#: templates/admin_customers.html:204 templates/admin_employees.html:166
+#: templates/login.html:50
+msgid "كلمة المرور"
+msgstr ""
+
+#: templates/admin_customers.html:207 templates/admin_employees.html:169
+msgid "تأكيد وإضافة"
+msgstr ""
+
+#: templates/admin_customers.html:216
+msgid "تعديل بيانات العميل"
+msgstr ""
+
+#: templates/admin_customers.html:235 templates/admin_employees.html:200
+msgid "كلمة المرور الجديدة (اتركها فارغة لعدم التغيير)"
+msgstr ""
+
+#: templates/admin_customers.html:238 templates/admin_employees.html:203
+#: templates/admin_settings.html:93
+msgid "حفظ التغييرات"
+msgstr ""
+
+#: templates/admin_dashboard.html:7 templates/admin_employees.html:7
+#: templates/admin_employees.html:84
+msgid "إدارة الموظفين"
+msgstr ""
+
+#: templates/admin_dashboard.html:147
+msgid "المدير"
+msgstr ""
+
+#: templates/admin_dashboard.html:149 templates/agent_dashboard.html:289
+#: templates/chat.html:290 templates/chat.html:354
+msgid "خروج"
+msgstr ""
+
+#: templates/admin_dashboard.html:156
+msgid "نظرة عامة على النظام"
+msgstr ""
+
+#: templates/admin_dashboard.html:161
+msgid "تذاكر جديدة"
+msgstr ""
+
+#: templates/admin_dashboard.html:165 templates/admin_tickets.html:221
+msgid "قيد العمل"
+msgstr ""
+
+#: templates/admin_dashboard.html:169
+msgid "تذاكر معلقة"
+msgstr ""
+
+#: templates/admin_dashboard.html:173 templates/admin_tickets.html:223
+#: templates/admin_tickets.html:272
+msgid "تم الحل"
+msgstr ""
+
+#: templates/admin_dashboard.html:180
+msgid "آخر 5 تذاكر نشطة"
+msgstr ""
+
+#: templates/admin_dashboard.html:185 templates/admin_tickets.html:247
+msgid "رقم"
+msgstr ""
+
+#: templates/admin_dashboard.html:186 templates/admin_tickets.html:248
+#: templates/agent_dashboard.html:360 templates/chat.html:275
+msgid "العميل"
+msgstr ""
+
+#: templates/admin_dashboard.html:187 templates/admin_reports.html:138
+#: templates/admin_tickets.html:249
+msgid "الموظف"
+msgstr ""
+
+#: templates/admin_dashboard.html:188 templates/admin_tickets.html:217
+#: templates/admin_tickets.html:251
+msgid "الحالة"
+msgstr ""
+
+#: templates/admin_dashboard.html:189 templates/admin_tickets.html:253
+#: templates/agent_dashboard.html:364
+msgid "الإجراء"
+msgstr ""
+
+#: templates/admin_dashboard.html:199 templates/admin_tickets.html:220
+#: templates/admin_tickets.html:267
+msgid "جديدة"
+msgstr ""
+
+#: templates/admin_dashboard.html:200 templates/admin_tickets.html:268
+msgid ""
+"قيد\n"
+"                                    العمل"
+msgstr ""
+
+#: templates/admin_dashboard.html:202 templates/admin_tickets.html:222
+#: templates/admin_tickets.html:270
+msgid "معلقة"
+msgstr ""
+
+#: templates/admin_dashboard.html:209
+msgid "عرض"
+msgstr ""
+
+#: templates/admin_dashboard.html:215
+msgid "لا توجد تذاكر نشطة"
+msgstr ""
+
+#: templates/admin_employees.html:86
+msgid "إضافة موظف جديد"
+msgstr ""
+
+#: templates/admin_employees.html:96 templates/admin_employees.html:188
+msgid "الوظيفة"
+msgstr ""
+
+#: templates/admin_employees.html:123
+msgid "هل أنت متأكد من حذف هذا الموظف؟"
+msgstr ""
+
+#: templates/admin_employees.html:131
+msgid "لا يوجد موظفين حالياً"
+msgstr ""
+
+#: templates/admin_employees.html:145
+msgid "بيانات الموظف الجديد"
+msgstr ""
+
+#: templates/admin_employees.html:150 templates/admin_employees.html:184
+msgid "اسم الموظف"
+msgstr ""
+
+#: templates/admin_employees.html:154
+msgid "الوظيفة (Job Title)"
+msgstr ""
+
+#: templates/admin_employees.html:155
+msgid "مثال: Senior Support"
+msgstr ""
+
+#: templates/admin_employees.html:178
+msgid "تعديل بيانات الموظف"
+msgstr ""
+
+#: templates/admin_reports.html:81
+msgid "نظرة شاملة على أداء النظام والفريق"
+msgstr ""
+
+#: templates/admin_reports.html:95
+msgid "ملخص عام"
+msgstr ""
+
+#: templates/admin_reports.html:97
+msgid "إجمالي التذاكر"
+msgstr ""
+
+#: templates/admin_reports.html:101
+msgid "تذاكر تم حلها"
+msgstr ""
+
+#: templates/admin_reports.html:105
+msgid "تذاكر نشطة حالياً"
+msgstr ""
+
+#: templates/admin_reports.html:109
+msgid "نسبة الإنجاز"
+msgstr ""
+
+#: templates/admin_reports.html:118
+msgid "مستخدمو النظام"
+msgstr ""
+
+#: templates/admin_reports.html:120
+msgid "عدد الموظفين"
+msgstr ""
+
+#: templates/admin_reports.html:124
+msgid "عدد العملاء"
+msgstr ""
+
+#: templates/admin_reports.html:131
+msgid ""
+"أداء\n"
+"                        الموظفين"
+msgstr ""
+
+#: templates/admin_reports.html:139
+msgid "تذاكر محلولة"
+msgstr ""
+
+#: templates/admin_reports.html:140
+msgid "تذاكر نشطة"
+msgstr ""
+
+#: templates/admin_reports.html:141
+msgid "الإنتاجية"
+msgstr ""
+
+#: templates/admin_reports.html:167
+msgid ""
+"توزيع\n"
+"                        التصنيفات"
+msgstr ""
+
+#: templates/admin_reports.html:171
+msgid "غير مصنف"
+msgstr ""
+
+#: templates/admin_reports.html:175
+msgid "لا توجد بيانات حالياً"
+msgstr ""
+
+#: templates/admin_settings.html:6 templates/admin_settings.html:68
+msgid "إعدادات النظام"
+msgstr ""
+
+#: templates/admin_settings.html:69
+msgid "تخصيص التصنيفات والمنتجات والخيارات العامة"
+msgstr ""
+
+#: templates/admin_settings.html:83
+msgid "إعدادات النظام العامة"
+msgstr ""
+
+#: templates/admin_settings.html:87
+msgid ""
+"اسم\n"
+"                                البرنامج / الشركة"
+msgstr ""
+
+#: templates/admin_settings.html:99
+msgid ""
+"بيانات\n"
+"                        المدير"
+msgstr ""
+
+#: templates/admin_settings.html:110
+msgid ""
+"البريد\n"
+"                                الإلكتروني"
+msgstr ""
+
+#: templates/admin_settings.html:115
+msgid ""
+"كلمة\n"
+"                                المرور الجديدة (اتركها فارغة إذا لم ترد "
+"التغيير)"
+msgstr ""
+
+#: templates/admin_settings.html:119
+msgid ""
+"تحديث الملف\n"
+"                            الشخصي"
+msgstr ""
+
+#: templates/admin_settings.html:126
+msgid "إدارة التصنيفات"
+msgstr ""
+
+#: templates/admin_settings.html:129
+msgid "اسم التصنيف الجديد..."
+msgstr ""
+
+#: templates/admin_settings.html:132 templates/admin_settings.html:157
+msgid "إضافة"
+msgstr ""
+
+#: templates/admin_settings.html:139
+msgid "حذف هذا التصنيف؟"
+msgstr ""
+
+#: templates/admin_settings.html:151
+msgid "إدارة المنتجات"
+msgstr ""
+
+#: templates/admin_settings.html:154
+msgid "اسم المنتج الجديد..."
+msgstr ""
+
+#: templates/admin_settings.html:164
+msgid "حذف هذا المنتج؟"
+msgstr ""
+
+#: templates/admin_settings.html:178
+msgid "مقترحات التصنيفات اليدوية"
+msgstr ""
+
+#: templates/admin_settings.html:179
+msgid ""
+"هذه تصنيفات كتبها\n"
+"                        الموظفون يدوياً. يمكنك الموافقة لإضافتها للنظام "
+"أو رفضها."
+msgstr ""
+
+#: templates/admin_settings.html:188
+msgid "بواسطة:"
+msgstr ""
+
+#: templates/admin_settings.html:194
+msgid "موافقة (إضافة)"
+msgstr ""
+
+#: templates/admin_settings.html:197
+msgid "رفض (تجاهل)"
+msgstr ""
+
+#: templates/admin_tickets.html:6 templates/admin_tickets.html:189
+msgid "سجل التذاكر الكامل"
+msgstr ""
+
+#: templates/admin_tickets.html:190
+msgid "إدارة ومراقبة جميع التذاكر في النظام"
+msgstr ""
+
+#: templates/admin_tickets.html:203
+msgid "اسم العميل / الموظف"
+msgstr ""
+
+#: templates/admin_tickets.html:204
+msgid "بحث بالاسم..."
+msgstr ""
+
+#: templates/admin_tickets.html:207 templates/admin_tickets.html:250
+msgid "التصنيف"
+msgstr ""
+
+#: templates/admin_tickets.html:209 templates/admin_tickets.html:219
+msgid "الكل"
+msgstr ""
+
+#: templates/admin_tickets.html:210
+msgid "استفسار عام"
+msgstr ""
+
+#: templates/admin_tickets.html:211
+msgid "مشكلة تقنية"
+msgstr ""
+
+#: templates/admin_tickets.html:212
+msgid "اقتراح"
+msgstr ""
+
+#: templates/admin_tickets.html:213
+msgid "أخرى"
+msgstr ""
+
+#: templates/admin_tickets.html:227 templates/admin_tickets.html:252
+msgid "التاريخ"
+msgstr ""
+
+#: templates/admin_tickets.html:233
+msgid "بحث"
+msgstr ""
+
+#: templates/admin_tickets.html:237
+msgid "إعادة تعيين"
+msgstr ""
+
+#: templates/admin_tickets.html:280
+msgid "تفاصيل"
+msgstr ""
+
+#: templates/agent_dashboard.html:257
+msgid "أهلاً بك،"
+msgstr ""
+
+#: templates/agent_dashboard.html:269 templates/agent_dashboard.html:316
+msgid "إضافة عميل"
+msgstr ""
+
+#: templates/agent_dashboard.html:287
+msgid "موظف دعم"
+msgstr ""
+
+#: templates/agent_dashboard.html:303 templates/chat.html:304
+msgid "الإشعارات"
+msgstr ""
+
+#: templates/agent_dashboard.html:305
+msgid ""
+"مسح\n"
+"                            الكل"
+msgstr ""
+
+#: templates/agent_dashboard.html:321
+msgid "تسجيل خروج"
+msgstr ""
+
+#: templates/agent_dashboard.html:336
+msgid "إجمالي التذاكر المحلولة"
+msgstr ""
+
+#: templates/agent_dashboard.html:346
+msgid "تذاكر قيد العمل (معك)"
+msgstr ""
+
+#: templates/agent_dashboard.html:354
+msgid "قائمة التذاكر النشطة"
+msgstr ""
+
+#: templates/agent_dashboard.html:359
+msgid "رقم التذكرة"
+msgstr ""
+
+#: templates/agent_dashboard.html:361
+msgid "المنتج"
+msgstr ""
+
+#: templates/agent_dashboard.html:362
+msgid "الحالة / المسؤول"
+msgstr ""
+
+#: templates/agent_dashboard.html:363
+msgid "منذ"
+msgstr ""
+
+#: templates/agent_dashboard.html:378
+msgid "انتظار (جديد)"
+msgstr ""
+
+#: templates/agent_dashboard.html:380
+msgid "معك الآن"
+msgstr ""
+
+#: templates/agent_dashboard.html:391
+msgid "استلام التذكرة"
+msgstr ""
+
+#: templates/agent_dashboard.html:395
+msgid "متابعة"
+msgstr ""
+
+#: templates/agent_dashboard.html:398
+msgid "هذه التذكرة مع زميل آخر"
+msgstr ""
+
+#: templates/agent_dashboard.html:399
+msgid "محجوز"
+msgstr ""
+
+#: templates/agent_dashboard.html:409
+msgid "لا توجد تذاكر نشطة حالياً"
+msgstr ""
+
+#: templates/agent_dashboard.html:410
+msgid "استمتع بوقتك حتى وصول عميل جديد!"
+msgstr ""
+
+#: templates/agent_dashboard.html:432
+msgid ""
+"اسم\n"
+"                        العميل"
+msgstr ""
+
+#: templates/agent_dashboard.html:438
+msgid ""
+"البريد\n"
+"                        الإلكتروني"
+msgstr ""
+
+#: templates/agent_dashboard.html:444
+msgid ""
+"كلمة\n"
+"                        المرور"
+msgstr ""
+
+#: templates/agent_dashboard.html:450
+msgid ""
+"الهاتف\n"
+"                        (اختياري)"
+msgstr ""
+
+#: templates/agent_dashboard.html:456
+msgid ""
+"المنتج\n"
+"                        المشترك فيه"
+msgstr ""
+
+#: templates/agent_dashboard.html:465
+msgid "+ إضافة منتج جديد..."
+msgstr ""
+
+#: templates/agent_dashboard.html:469
+msgid ""
+"اسم\n"
+"                        المنتج الجديد"
+msgstr ""
+
+#: templates/agent_dashboard.html:476
+msgid "إضافة العميل"
+msgstr ""
+
+#: templates/chat.html:7
+msgid "المحادثة"
+msgstr ""
+
+#: templates/chat.html:306
+msgid "مسح الكل"
+msgstr ""
+
+#: templates/chat.html:326
+msgid "إرفاق صورة"
+msgstr ""
+
+#: templates/chat.html:332
+msgid "اكتب رسالتك..."
+msgstr ""
+
+#: templates/chat.html:345
+msgid "لوحة التحكم"
+msgstr ""
+
+#: templates/chat.html:357
+msgid "هل أنت متأكد من إنهاء وحل هذه التذكرة؟"
+msgstr ""
+
+#: templates/chat.html:359
+msgid "إنهاء"
+msgstr ""
+
+#: templates/chat.html:363
+msgid "هل تريد وضع التذكرة في حالة انتظار رد العميل؟"
+msgstr ""
+
+#: templates/chat.html:365
+msgid "انتظار رد العميل (معلقة)"
+msgstr ""
+
+#: templates/chat.html:371
+msgid "تصنيف الطلب"
+msgstr ""
+
+#: templates/chat.html:374
+msgid "اختر النوع..."
+msgstr ""
+
+#: templates/chat.html:379
+msgid "أخرى (تحديد يدوي)"
+msgstr ""
+
+#: templates/chat.html:384
+msgid "اكتب نوع المشكلة..."
+msgstr ""
+
+#: templates/chat.html:386
+msgid "حفظ التصنيف"
+msgstr ""
+
+#: templates/chat.html:394
+msgid "ملاحظات داخلية"
+msgstr ""
+
+#: templates/chat.html:397
+msgid "ملاحظات للفريق..."
+msgstr ""
+
+#: templates/chat.html:400
+msgid "حفظ الملاحظة"
+msgstr ""
+
+#: templates/chat.html:403
+msgid "تم الحفظ بنجاح!"
+msgstr ""
+
+#: templates/chat.html:408
+msgid "بيانات العميل"
+msgstr ""
+
+#: templates/chat.html:412
+msgid "الاسم:"
+msgstr ""
+
+#: templates/chat.html:417
+msgid "الوظيفة:"
+msgstr ""
+
+#: templates/chat.html:423
+msgid "الهاتف:"
+msgstr ""
+
+#: templates/chat.html:424
+msgid "نسخ"
+msgstr ""
+
+#: templates/chat.html:429
+msgid "المنتج:"
+msgstr ""
+
+#: templates/login.html:7
+msgid "تسجيل الدخول"
+msgstr ""
+
+#: templates/login.html:39
+msgid "مرحباً بك مجدداً"
+msgstr ""
+
+#: templates/login.html:40
+msgid "يرجى تسجيل الدخول للوصول إلى لوحة التحكم"
+msgstr ""
+
+#: templates/login.html:55
+msgid "دخول"
+msgstr ""
+

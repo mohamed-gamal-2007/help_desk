@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="{{ current_lang }}" dir="{{ 'rtl' if current_lang == 'ar' else 'ltr' }}">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ _('إدارة الموظفين') }} | {{ company_name }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <style>
+        .sidebar-footer {
+            margin-top: auto;
+            padding: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-link.active {
+            background: rgba(99, 102, 241, 0.1);
+            color: #818cf8;
+        }
+
+        .dashboard-wrapper {
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 260px;
+            background: #1f2937;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem;
+            background: #0f172a;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 1.5rem;
+            border-radius: 12px;
+        }
+
+        .table-container {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 1rem;
+            text-align: right;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        th {
+            background: rgba(0, 0, 0, 0.2);
+            color: #94a3b8;
+        }
+
+        .badge {
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+
+        .badge-new {
+            background: rgba(239, 68, 68, 0.2);
+            color: #f87171;
+        }
+
+        .badge-progress {
+            background: rgba(245, 158, 11, 0.2);
+            color: #fbbf24;
+        }
+
+        .badge-pending {
+            background: rgba(99, 102, 241, 0.2);
+            color: #818cf8;
+        }
+
+        .badge-resolved {
+            background: rgba(34, 197, 94, 0.2);
+            color: #4ade80;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard-wrapper">
+        <aside class="sidebar">
+            <ul class="nav-menu">
+                <li class="nav-item"><a href="/admin" class="nav-link active">
+                        <span>{{ _('الرئيسية') }}</span> <i class="fas fa-home"></i></a></li>
+                <li class="nav-item"><a href="/admin/tickets" class="nav-link">
+                        <span>{{ _('التذاكر') }}</span> <i class="fas fa-ticket-alt"></i></a></li>
+                <li class="nav-item"><a href="/admin/employees" class="nav-link">
+                        <span>{{ _('الموظفين') }}</span> <i class="fas fa-user-tie"></i></a></li>
+                <li class="nav-item"><a href="/admin/customers" class="nav-link">
+                        <span>{{ _('العملاء') }}</span> <i class="fas fa-users"></i></a></li>
+                <li class="nav-item"><a href="/admin/reports" class="nav-link">
+                        <span>{{ _('التقارير') }}</span> <i class="fas fa-chart-bar"></i></a></li>
+                <li class="nav-item"><a href="/admin/settings" class="nav-link">
+                        <span>{{ _('الإعدادات') }}</span> <i class="fas fa-cog"></i></a></li>
+
+                <li class="nav-item" style="margin-top: auto;">
+                    <a href="/logout" class="nav-link logout">
+                        <span>{{ _('تسجيل الخروج') }}</span> <i class="fas fa-sign-out-alt"></i>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-bar">
+                <h1>{{ _('نظرة عامة على النظام') }}</h1>
+                <a href="/set_lang/{{ 'en' if current_lang == 'ar' else 'ar' }}" class="lang-btn">
+                    <span>{{ 'English' if current_lang == 'ar' else 'العربية' }}</span>
+                    <i class="fas fa-globe"></i>
+                </a>
+            </header>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span style="color: #94a3b8;">{{ _('تذاكر جديدة') }}</span>
+                    <h2 style="margin-top: 0.5rem; font-size: 2rem;">{{ stats.new }}</h2>
+                </div>
+                <div class="stat-card">
+                    <span style="color: #fbbf24;">{{ _('قيد العمل') }}</span>
+                    <h2 style="margin-top: 0.5rem; font-size: 2rem;">{{ stats.in_progress }}</h2>
+                </div>
+                <div class="stat-card">
+                    <span style="color: #818cf8;">{{ _('تذاكر معلقة') }}</span>
+                    <h2 style="margin-top: 0.5rem; font-size: 2rem;">{{ stats.pending }}</h2>
+                </div>
+                <div class="stat-card">
+                    <span style="color: #4ade80;">{{ _('تم الحل') }}</span>
+                    <h2 style="margin-top: 0.5rem; font-size: 2rem;">{{ stats.resolved }}</h2>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <div style="padding: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.05); font-weight: bold;">
+                    <i class="fas fa-history"></i> {{ _('آخر 5 تذاكر نشطة') }}
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>{{ _('رقم') }}</th>
+                            <th>{{ _('العميل') }}</th>
+                            <th>{{ _('الموظف') }}</th>
+                            <th>{{ _('الحالة') }}</th>
+                            <th>{{ _('الإجراء') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for ticket in tickets %}
+                        <tr>
+                            <td>#{{ ticket.id }}</td>
+                            <td>{{ ticket.customer.username }}</td>
+                            <td>{{ ticket.employee.username if ticket.employee else '---' }}</td>
+                            <td>
+                                {% if ticket.status == 'new' %}<span class="badge badge-new">{{ _('جديدة') }}</span>
+                                {% elif ticket.status == 'in_progress' %}<span class="badge badge-progress">{{ _('قيد
+                                    العمل') }}</span>
+                                {% elif ticket.status == 'pending' %}<span class="badge badge-pending">{{ _('معلقة')
+                                    }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="/chat?ticket_id={{ ticket.id }}" class="btn"
+                                    style="background: rgba(99, 102, 241, 0.2); color: #818cf8; padding: 0.4rem 0.8rem; border-radius: 6px; text-decoration: none; font-size: 0.8rem;">
+                                    <i class="fas fa-external-link-alt"></i> {{ _('عرض') }}
+                                </a>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="5" style="text-align: center; padding: 2rem;">{{ _('لا توجد تذاكر نشطة') }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>

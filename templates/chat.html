@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="{{ current_lang }}" dir="{{ 'rtl' if current_lang == 'ar' else 'ltr' }}">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ _('المحادثة') }} | {{ company_name }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Inter:wght@400;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <style>
+        /* Override Main CSS Layout Restrictions */
+        body {
+            display: block !important;
+            /* إلغاء التوسيط الإجباري */
+            align-items: unset !important;
+            justify-content: unset !important;
+            height: 100vh;
+            overflow: hidden;
+            background: #0f172a;
+        }
+
+        /* Full Screen Container */
+        .chat-layout {
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+        }
+
+        /* Sidebar Style */
+        .chat-sidebar {
+            width: 350px;
+            background: rgba(30, 41, 59, 0.5);
+            /* Semi-transparent */
+            border-left: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem;
+            gap: 1.5rem;
+            z-index: 10;
+        }
+
+        /* Main Chat Area */
+        .chat-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: radial-gradient(circle at top right, rgba(99, 102, 241, 0.1), transparent),
+                radial-gradient(circle at bottom left, rgba(6, 182, 212, 0.05), transparent);
+            position: relative;
+        }
+
+        /* Header */
+        .chat-header {
+            padding: 1rem 2rem;
+            background: rgba(15, 23, 42, 0.8);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Messages */
+        .messages-container {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+        }
+
+        .message-bubble {
+            max-width: 65%;
+            padding: 1rem 1.2rem;
+            border-radius: 16px;
+            margin-bottom: 1rem;
+            position: relative;
+            line-height: 1.6;
+            font-size: 0.95rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .msg-received {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-top-right-radius: 2px;
+            margin-left: auto;
+        }
+
+        .msg-sent {
+            background: linear-gradient(135deg, #6366f1, #4f46e5);
+            border-top-left-radius: 2px;
+            margin-right: auto;
+        }
+
+        .msg-time {
+            font-size: 0.7rem;
+            opacity: 0.6;
+            margin-top: 5px;
+            text-align: left;
+        }
+
+        /* Notification Dropdown */
+        .notif-dropdown {
+            position: absolute;
+            top: 60px;
+            left: 20px;
+            width: 300px;
+            background: #1e293b;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 2000;
+            overflow: hidden;
+            text-align: right;
+        }
+
+        .notif-header {
+            padding: 10px 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.9rem;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .notif-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .notif-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .notif-item:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .notif-item.new {
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .notif-empty {
+            padding: 20px;
+            text-align: center;
+            color: #64748b;
+            font-size: 0.85rem;
+        }
+
+        /* Footer Input */
+        .chat-footer {
+            padding: 1.5rem 2rem;
+            background: rgba(15, 23, 42, 0.9);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .input-box {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 30px;
+            padding: 0.8rem 1.5rem;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .input-box:focus {
+            border-color: #6366f1;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .icon-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: 0.2s;
+        }
+
+        .btn-send {
+            background: #6366f1;
+            color: white;
+        }
+
+        .btn-send:hover {
+            transform: scale(1.1);
+            background: #4f46e5;
+        }
+
+        .btn-attach {
+            background: transparent;
+            color: #94a3b8;
+        }
+
+        .btn-attach:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* Tools Styles */
+        .tool-box {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 1rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .tool-label {
+            color: #94a3b8;
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+            display: block;
+            font-weight: bold;
+        }
+
+        /* Check Button for 'Other' */
+        .check-btn {
+            background: #22c55e;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+        }
+
+        .check-btn:hover {
+            background: #16a34a;
+            transform: translateY(-2px);
+        }
+
+        .check-btn:active {
+            transform: translateY(0);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="chat-layout">
+
+        <!-- MAIN CHAT AREA -->
+        <main class="chat-area">
+            <header class="chat-header">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    {% if user.role == 'employee' %}
+                    <div
+                        style="width: 45px; height: 45px; background: linear-gradient(to right, #6366f1, #a855f7); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem;">
+                        {{ ticket.customer.username[0]|upper if ticket and ticket.customer else 'U' }}
+                    </div>
+                    <div>
+                        <h3 style="margin: 0; font-size: 1.1rem;">{{ ticket.customer.username if ticket and
+                            ticket.customer else _('العميل') }}</h3>
+                        <span style="font-size: 0.8rem; color: #94a3b8;">{{ ticket.product.name if ticket and
+                            ticket.product else _('عام') }}</span>
+                    </div>
+                    {% else %}
+                    <div>
+                        <h3 style="margin: 0; font-size: 1.3rem; color: var(--primary-color); font-weight: 700;">{{
+                            company_name }}</h3>
+                    </div>
+                    {% endif %}
+                </div>
+
+                {% if user.role == 'customer' %}
+                <a href="/logout"
+                    style="color: #ef4444; background: rgba(239, 68, 68, 0.1); padding: 0.5rem 1rem; border-radius: 8px; text-decoration: none; font-size: 0.9rem;">
+                    <i class="fas fa-sign-out-alt"></i> {{ _('خروج') }}
+                </a>
+                {% elif user.role == 'employee' %}
+                <!-- Notification Bell & Dropdown for Employee -->
+                <div style="position: relative;">
+                    <div id="notifBell"
+                        style="cursor: pointer; color: #94a3b8; font-size: 1.2rem; transition: 0.3s; padding: 5px; margin-left:10px;">
+                        <i class="fas fa-bell"></i>
+                        <span id="notifBadge"
+                            style="display: none; position: absolute; top: 0; right: 0; width: 10px; height: 10px; background: #ef4444; border-radius: 50%; border: 2px solid #0f172a;"></span>
+                    </div>
+
+                    <div id="notifDropdown" class="notif-dropdown">
+                        <div class="notif-header">
+                            <span>{{ _('الإشعارات') }}</span>
+                            <span style="font-size: 0.7rem; color: #64748b; cursor: pointer;" onclick="clearNotifs()">{{
+                                _('مسح الكل') }}</span>
+                        </div>
+                        <div id="notifList" class="notif-list">
+                            <!-- Notifications will appear here -->
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </header>
+
+            <div id="messagesArea" class="messages-container">
+                {% for msg in messages %}
+                <div class="message-bubble {{ 'msg-sent' if msg.sender_id == user.user_id else 'msg-received' }}"
+                    id="msg-{{ msg.id }}">
+                    {% if msg.reply_to %}
+                    <a href="#msg-{{ msg.reply_to_id }}" class="reply-preview-bubble">
+                        <div class="reply-bar"></div>
+                        <div class="reply-content">
+                            {% if '<img' in msg.reply_to.content %} <i class="fas fa-camera"></i> {{ _('صورة') }}
+                                {% else %}
+                                {{ msg.reply_to.content[:50] }}...
+                                {% endif %}
+                        </div>
+                    </a>
+                    {% endif %}
+
+                    {{ msg.content | safe }}
+
+                    <div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 10px;">
+                        <button class="reply-btn"
+                            onclick="prepareReply({{ msg.id }}, '{{ msg.content[:30]|striptags|replace('\'', '\\\'') }}...')">
+                            <i class="fas fa-reply"></i>
+                        </button>
+                        <div class="msg-time">{{ msg.timestamp.strftime('%I:%M %p') }}</div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Reply Preview Bar -->
+            <div id="replyPreview"
+                style="display: none; background: rgba(255,255,255,0.1); padding: 10px 20px; border-top: 1px solid rgba(255,255,255,0.1); align-items: center; justify-content: space-between;">
+                <div style="border-right: 3px solid #6366f1; padding-right: 10px; color: #cbd5e1; font-size: 0.9rem;">
+                    <span
+                        style="color: #6366f1; font-weight: bold; font-size: 0.8rem; display: block; margin-bottom: 2px;">{{
+                        _('الرد على:') }}</span>
+                    <span id="replyText">...</span>
+                </div>
+                <button onclick="cancelReply()"
+                    style="background: none; border: none; color: #94a3b8; cursor: pointer; font-size: 1.2rem;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <!-- Emojis & Logic -->
+            <footer class="chat-footer">
+                <!-- Emoji Button -->
+                <div style="position: relative;">
+                    <button class="icon-btn btn-attach" id="emojiBtn" title="Emojis">
+                        <i class="far fa-smile"></i>
+                    </button>
+                    <div id="emojiPicker" class="emoji-picker" style="display: none;">
+                        <span onclick="addEmoji('👍')">👍</span>
+                        <span onclick="addEmoji('❤️')">❤️</span>
+                        <span onclick="addEmoji('😂')">😂</span>
+                        <span onclick="addEmoji('😮')">😮</span>
+                        <span onclick="addEmoji('😢')">😢</span>
+                        <span onclick="addEmoji('😡')">😡</span>
+                        <span onclick="addEmoji('🎉')">🎉</span>
+                        <span onclick="addEmoji('✅')">✅</span>
+                        <span onclick="addEmoji('👋')">👋</span>
+                        <span onclick="addEmoji('🙏')">🙏</span>
+                        <span onclick="addEmoji('🔥')">🔥</span>
+                        <span onclick="addEmoji('💯')">💯</span>
+                    </div>
+                </div>
+
+                <button class="icon-btn btn-attach" title="{{ _('إرفاق صورة') }}"
+                    onclick="document.getElementById('fileInput').click()">
+                    <i class="fas fa-paperclip"></i>
+                </button>
+                <input type="file" id="fileInput" hidden accept="image/*" onchange="uploadFile()">
+
+                <input type="text" id="chatInput" class="input-box" placeholder="{{ _('اكتب رسالتك...') }}"
+                    autocomplete="off">
+
+                <!-- Mic Removed -->
+
+                <button id="sendBtn" class="icon-btn btn-send">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </footer>
+        </main>
+
+        <!-- SIDEBAR (For Employee & Admin) -->
+        {% if (user.role == 'employee' or user.role == 'admin') and ticket %}
+        <aside class="chat-sidebar">
+            <div style="margin-bottom: 1rem;">
+                <h2 style="font-size: 1.2rem; margin-bottom: 0.5rem;">{{ _('لوحة التحكم') }}</h2>
+                <div style="height: 2px; width: 50px; background: #6366f1; border-radius: 2px;"></div>
+            </div>
+
+            <!-- Actions -->
+            <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 1rem;">
+                <div style="display: flex; gap: 10px;">
+                    <a href="/agent/dashboard"
+                        style="flex: 1; background: rgba(255,255,255,0.05); color: white; padding: 0.8rem; border-radius: 8px; text-align: center; text-decoration: none; border: 1px solid rgba(255,255,255,0.1);">
+                        <i class="fas fa-arrow-right"></i> {{ _('خروج') }}
+                    </a>
+                    <button onclick="resolveTicket()"
+                        style="flex: 1; background: rgba(34, 197, 94, 0.2); color: #4ade80; padding: 0.8rem; border-radius: 8px; text-align: center; text-decoration: none; border: 1px solid rgba(34, 197, 94, 0.2); cursor: pointer;">
+                        <i class="fas fa-check-circle"></i> {{ _('إنهاء') }}
+                    </button>
+                </div>
+
+                <!-- Transfer Ticket -->
+                <form action="/ticket/transfer/{{ ticket.id }}" method="POST" style="margin-top: 5px;">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                    <div style="display: flex; gap: 5px;">
+                        <select name="agent_id" required
+                            style="flex: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: white; padding: 0.5rem; font-size: 0.85rem;">
+                            <option value="">{{ _('تحويل لزميل...') }}</option>
+                            {% for emp in employees %}
+                            <option value="{{ emp.id }}">{{ emp.username }}</option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit"
+                            style="background: var(--accent-color); color: white; border: none; border-radius: 8px; padding: 0.5rem 1rem; cursor: pointer;">
+                            <i class="fas fa-exchange-alt"></i>
+                        </button>
+                    </div>
+                </form>
+
+                <a href="/ticket/pending/{{ ticket.id }}"
+                    onclick="return confirm('{{ _('هل تريد وضع التذكرة في حالة انتظار رد العميل؟') }}')"
+                    style="background: rgba(99, 102, 241, 0.15); color: #a5b4fc; padding: 0.8rem; border-radius: 8px; text-align: center; text-decoration: none; border: 1px solid rgba(99, 102, 241, 0.2); font-size: 0.9rem;">
+                    <i class="fas fa-hourglass-half"></i> {{ _('انتظار رد العميل (معلقة)') }}
+                </a>
+            </div>
+
+            <!-- Category -->
+            <div class="tool-box">
+                <span class="tool-label"><i class="fas fa-tags"></i> {{ _('تصنيف الطلب') }}</span>
+                <select id="categorySelect" onchange="toggleOtherInput()"
+                    style="width: 100%; padding: 0.8rem; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 8px; outline: none;">
+                    <option value="" disabled {{ 'selected' if not ticket.category }}>{{ _('اختر النوع...') }}</option>
+                    {% for cat in categories %}
+                    <option value="{{ cat.name }}" {{ 'selected' if ticket.category==cat.name }}>{{ cat.name }}</option>
+                    {% endfor %}
+                    <option value="other" {{ 'selected' if ticket.category and ticket.category not in
+                        categories|map(attribute='name' ) }}>{{ _('أخرى (تحديد يدوي)') }}</option>
+                </select>
+
+                <!-- Other Input with Check Button -->
+                <div id="otherCategoryInput" style="display: none; margin-top: 10px; gap: 8px; align-items: stretch;">
+                    <input type="text" id="newCategoryText" placeholder="{{ _('اكتب نوع المشكلة...') }}"
+                        style="flex: 1; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 0 10px; color: white; outline: none;">
+                    <button onclick="submitNewCategory()" class="check-btn" title="{{ _('حفظ التصنيف') }}">
+                        <i class="fas fa-check"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Notes -->
+            <div class="tool-box" style="margin-bottom: 1rem;">
+                <span class="tool-label"><i class="fas fa-sticky-note"></i> {{ _('ملاحظات داخلية') }}</span>
+                <textarea id="internalNote" rows="4"
+                    style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 8px; padding: 0.8rem; outline: none; resize: none;"
+                    placeholder="{{ _('ملاحظات للفريق...') }}">{{ ticket.internal_note or '' }}</textarea>
+                <button onclick="saveNote()"
+                    style="width: 100%; margin-top: 10px; background: #6366f1; color: white; border: none; padding: 0.6rem; border-radius: 6px; cursor: pointer;">{{
+                    _('حفظ الملاحظة') }}</button>
+                <div id="noteSavedMsg"
+                    style="text-align: center; color: #4ade80; font-size: 0.8rem; margin-top: 5px; display: none;">{{
+                    _('تم الحفظ بنجاح!') }}</div>
+            </div>
+
+            <!-- Client Info -->
+            <div class="tool-box" style="margin-top: 1rem;">
+                <span class="tool-label"><i class="fas fa-id-card"></i> {{ _('بيانات العميل') }}</span>
+                <div style="font-size: 0.9rem; display: flex; flex-direction: column; gap: 10px;">
+                    <div
+                        style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 5px;">
+                        <span style="color: #94a3b8;">{{ _('الاسم:') }}</span>
+                        <span style="font-weight: bold; color: white;">{{ ticket.customer.username }}</span>
+                    </div>
+                    <div
+                        style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 5px;">
+                        <span style="color: #94a3b8;">{{ _('الهاتف:') }}</span>
+                        <span style="color: #a5b4fc; cursor: pointer;" title="{{ _('نسخ') }}">{{ ticket.customer.phone
+                            if
+                            ticket.customer.phone else '---' }}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="color: #94a3b8;">{{ _('المنتج:') }}</span>
+                        <span style="color: #4ade80;">{{ ticket.product.name if ticket.product else _('عام') }}</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+        {% endif %}
+    </div>
+
+    <!-- Rating Modal (For Customer) -->
+    <div id="ratingModal"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 3000; align-items: center; justify-content: center;">
+        <div
+            style="background: #1e293b; padding: 2rem; border-radius: 20px; width: 90%; max-width: 400px; text-align: center; border: 1px solid rgba(99, 102, 241, 0.3);">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">🎉</div>
+            <h2 style="color: white; margin-bottom: 0.5rem;">{{ _('تم حل المشكلة!') }}</h2>
+            <p style="color: #94a3b8; margin-bottom: 2rem;">{{ _('كيف كانت تجربتك مع موظف الدعم؟') }}</p>
+
+            <div class="stars" style="display: flex; justify-content: center; gap: 10px; margin-bottom: 1.5rem;">
+                <i class="far fa-star star-btn" data-val="1"
+                    style="font-size: 2rem; color: #facc15; cursor: pointer; transition: 0.2s;"></i>
+                <i class="far fa-star star-btn" data-val="2"
+                    style="font-size: 2rem; color: #facc15; cursor: pointer; transition: 0.2s;"></i>
+                <i class="far fa-star star-btn" data-val="3"
+                    style="font-size: 2rem; color: #facc15; cursor: pointer; transition: 0.2s;"></i>
+                <i class="far fa-star star-btn" data-val="4"
+                    style="font-size: 2rem; color: #facc15; cursor: pointer; transition: 0.2s;"></i>
+                <i class="far fa-star star-btn" data-val="5"
+                    style="font-size: 2rem; color: #facc15; cursor: pointer; transition: 0.2s;"></i>
+            </div>
+
+            <!-- <textarea id="ratingComment" hidden></textarea> -->
+
+            <button onclick="submitRating()"
+                style="background: #6366f1; color: white; border: none; padding: 0.8rem 2rem; border-radius: 10px; font-weight: bold; cursor: pointer; width: 100%;">{{
+                _('إرسال التقييم') }}</button>
+        </div>
+    </div>
+
+    <!-- Styles for new features -->
+    <style>
+        .emoji-picker {
+            position: absolute;
+            bottom: 60px;
+            right: 0;
+            background: #1e293b;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 10px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            z-index: 100;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .emoji-picker span {
+            font-size: 1.5rem;
+            cursor: pointer;
+            text-align: center;
+            padding: 5px;
+            border-radius: 5px;
+        }
+
+        .emoji-picker span:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Reply Styles */
+        .reply-btn {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            font-size: 0.9rem;
+            padding: 0;
+            opacity: 0.5;
+            transition: 0.2s;
+        }
+
+        .message-bubble:hover .reply-btn {
+            opacity: 1;
+        }
+
+        .reply-preview-bubble {
+            display: block;
+            background: rgba(0, 0, 0, 0.2);
+            border-right: 3px solid #6366f1;
+            padding: 5px 10px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            text-decoration: none;
+            color: #ccc;
+            font-size: 0.85rem;
+        }
+
+        .reply-preview-bubble:hover {
+            background: rgba(0, 0, 0, 0.3);
+        }
+    </style>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script>
+        {% if force_rating %}
+        window.addEventListener('load', () => {
+            document.getElementById('ratingModal').style.display = 'flex';
+            // إخفاء زر الإغلاق لإجبار المستخدم على التقييم
+            document.querySelector('#ratingModal .close-modal')?.remove();
+        });
+        {% endif %}
+
+        const socket = io();
+        const ticketId = "{{ ticket.id if ticket else '' }}";
+        const messagesArea = document.getElementById('messagesArea');
+        const userRole = "{{ user.role }}";
+
+        let currentReplyId = null;
+
+        // Auto scroll
+        messagesArea.scrollTop = messagesArea.scrollHeight;
+
+        if (ticketId) socket.emit('join', { room: 'ticket_' + ticketId });
+
+        // منطق الإشعارات للموظف
+        {% if user.role == 'employee' %}
+        socket.emit('join', {});
+
+        socket.on('notification', function (data) {
+            let notifs = JSON.parse(localStorage.getItem('notifs') || '[]');
+            notifs.unshift({
+                id: Date.now(),
+                ticket_id: data.ticket_id,
+                customer: data.customer,
+                time: data.time,
+                is_read: false
+            });
+            localStorage.setItem('notifs', JSON.stringify(notifs));
+            renderNotifications();
+
+            if (Notification.permission === "granted") {
+                new Notification(data.title, { body: data.message });
+            }
+        });
+
+        function renderNotifications() {
+            const list = document.getElementById('notifList');
+            const notifs = JSON.parse(localStorage.getItem('notifs') || '[]');
+            const badge = document.getElementById('notifBadge');
+
+            if (!list) return;
+
+            if (notifs.length === 0) {
+                list.innerHTML = '<div class="notif-empty">لا توجد إشعارات حالياً</div>';
+                badge.style.display = 'none';
+                return;
+            }
+
+            let hasUnread = notifs.some(n => !n.is_read);
+            badge.style.display = hasUnread ? 'block' : 'none';
+
+            list.innerHTML = notifs.map(n => `
+                <div class="notif-item ${n.is_read ? '' : 'new'}" onclick="handleNotifClick(${n.id}, ${n.ticket_id})">
+                    <div style="font-size: 0.85rem; font-weight: bold; color: white; margin-bottom: 3px;">رد من ${n.customer}</div>
+                    <div style="font-size: 0.75rem; color: #94a3b8;">قام بالرد على التذكرة #${n.ticket_id}</div>
+                    <div style="font-size: 0.7rem; color: #64748b; margin-top: 5px;">${n.time}</div>
+                </div>
+            `).join('');
+        }
+
+        function handleNotifClick(notifId, ticketId) {
+            let notifs = JSON.parse(localStorage.getItem('notifs') || '[]');
+            notifs = notifs.map(n => n.id === notifId ? { ...n, is_read: true } : n);
+            localStorage.setItem('notifs', JSON.stringify(notifs));
+            location.href = `/chat?ticket_id=${ticketId}`;
+        }
+
+        function clearNotifs() {
+            localStorage.setItem('notifs', '[]');
+            renderNotifications();
+        }
+
+        const bell = document.getElementById('notifBell');
+        const dropdown = document.getElementById('notifDropdown');
+        if (bell) {
+            bell.addEventListener('click', (e) => {
+                e.stopPropagation();
+                dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+                renderNotifications();
+            });
+        }
+        document.addEventListener('click', () => {
+            if (dropdown) dropdown.style.display = 'none';
+        });
+        renderNotifications();
+        {% endif %}
+
+        function sendMessage(content, isImage = false) {
+            const input = document.getElementById('chatInput');
+            const message = isImage ? content : input.value;
+            if (!message && !isImage) return;
+
+            let finalContent = message;
+            if (isImage) finalContent = `<img src="${message}" style="max-width: 100%; border-radius: 10px;">`;
+
+            // إرسال reply_to_id
+            socket.emit('send_message', {
+                message: finalContent,
+                ticket_id: ticketId,
+                reply_to_id: currentReplyId
+            });
+
+            if (!isImage) {
+                input.value = '';
+                cancelReply(); // مسح الرد بعد الإرسال
+            }
+        }
+
+        document.getElementById('sendBtn').addEventListener('click', () => sendMessage());
+        document.getElementById('chatInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        socket.on('receive_message', (data) => {
+            const div = document.createElement('div');
+            // تحديد الكلاس بناء على المرسل الحقيقي
+            const isMe = data.username === "{{ user.username }}";
+            div.className = `message-bubble ${isMe ? 'msg-sent' : 'msg-received'}`;
+            div.id = `msg-${data.id}`;
+
+            // بناء محتوى الرد
+            let replyHtml = '';
+            if (data.reply_to) {
+                replyHtml = `
+                <a href="#msg-${data.reply_to_id}" class="reply-preview-bubble">
+                    <div class="reply-content">${data.reply_to}</div>
+                </a>`;
+            }
+
+            div.innerHTML = `
+                ${replyHtml}
+                ${data.content}
+                <div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 10px;">
+                    <button class="reply-btn" onclick="prepareReply(${data.id}, '${data.content.substring(0, 30).replace(/'/g, "\\'") + '...'}')">
+                        <i class="fas fa-reply"></i>
+                    </button>
+                    <div class="msg-time">${data.time}</div>
+                </div>`;
+
+            messagesArea.appendChild(div);
+            messagesArea.scrollTop = messagesArea.scrollHeight;
+        });
+
+        // Reply Logic
+        function prepareReply(msgId, msgContent) {
+            currentReplyId = msgId;
+            document.getElementById('replyText').innerText = msgContent;
+            document.getElementById('replyPreview').style.display = 'flex';
+            document.getElementById('chatInput').focus();
+        }
+
+        function cancelReply() {
+            currentReplyId = null;
+            document.getElementById('replyPreview').style.display = 'none';
+        }
+
+        // Emojis Logic
+        const emojiBtn = document.getElementById('emojiBtn');
+        const emojiPicker = document.getElementById('emojiPicker');
+        if (emojiBtn) {
+            emojiBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                emojiPicker.style.display = emojiPicker.style.display === 'block' ? 'none' : 'block';
+            });
+            document.addEventListener('click', () => {
+                emojiPicker.style.display = 'none';
+            });
+        }
+        function addEmoji(emoji) {
+            const input = document.getElementById('chatInput');
+            input.value += emoji;
+            input.focus();
+        }
+
+        // Voice Removed
+
+        // --- RATING SYSTEM ---
+        let selectedRating = 0;
+
+        // Listen for resolution
+        socket.on('ticket_resolved', () => {
+            if (userRole === 'customer') {
+                document.getElementById('ratingModal').style.display = 'flex';
+            } else {
+                location.href = '/agent/dashboard'; // Recruiter goes back
+            }
+        });
+
+        document.querySelectorAll('.star-btn').forEach(star => {
+            star.addEventListener('click', function () {
+                selectedRating = parseInt(this.getAttribute('data-val'));
+                updateStars(selectedRating);
+            });
+        });
+
+        function updateStars(val) {
+            document.querySelectorAll('.star-btn').forEach(s => {
+                const sVal = parseInt(s.getAttribute('data-val'));
+                s.classList.remove('fas', 'far');
+                s.classList.add(sVal <= val ? 'fas' : 'far');
+            });
+        }
+
+        function submitRating() {
+            if (selectedRating === 0) {
+                alert('{{ _("يرجى اختيار عدد النجوم أولاً") }}');
+                return;
+            }
+
+            const btn = document.querySelector('#ratingModal button');
+            const originalText = btn.innerText;
+            btn.innerText = '{{ _("جاري الحفظ...") }}';
+            btn.disabled = true;
+
+            fetch('/submit_rating', {
+                method: 'POST',
+                body: JSON.stringify({ ticket_id: ticketId, rating: selectedRating }),
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': "{{ csrf_token() }}"
+                }
+            }).then(r => {
+                if (r.ok) {
+                    // Success
+                    location.href = '/chat'; // Refresh/Go to new ticket
+                } else {
+                    throw new Error('Server returned error');
+                }
+            }).catch(err => {
+                console.error('Rating Error:', err);
+                alert('{{ _("حدث خطأ أثناء حفظ التقييم. حاول مرة أخرى.") }}');
+                btn.innerText = originalText;
+                btn.disabled = false;
+            });
+        }
+
+        // Agent: Resolve Ticket Function
+        function resolveTicket() {
+            if (confirm('{{ _("هل أنت متأكد من إنهاء التذكرة؟") }}')) {
+                // Send signal via fetch first to update DB, then socket
+                fetch(`/ticket/close/${ticketId}`).then(() => {
+                    // Force refresh for agent, client will get socket event
+                });
+            }
+        }
+
+        function uploadFile() {
+            const file = document.getElementById('fileInput').files[0];
+            if (!file) return;
+            const formData = new FormData();
+            formData.append('file', file);
+            fetch('/upload_image', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': "{{ csrf_token() }}"
+                }
+            })
+                .then(r => r.json()).then(data => { if (data.url) sendMessage(data.url, true); });
+        }
+
+        /* Tools Logic */
+        function toggleOtherInput() {
+            const val = document.getElementById('categorySelect').value;
+            const div = document.getElementById('otherCategoryInput');
+
+            if (val === 'other') {
+                div.style.display = 'flex';
+            } else {
+                div.style.display = 'none';
+                if (val) submitCategory(val);
+            }
+        }
+
+        function submitNewCategory() {
+            const val = document.getElementById('newCategoryText').value;
+            if (val) {
+                submitCategory("أخرى: " + val);
+                // Visual Feedback
+                const btn = document.querySelector('.check-btn');
+                const originalHTML = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-check-double"></i>';
+                btn.style.background = '#16a34a';
+                setTimeout(() => {
+                    btn.innerHTML = originalHTML;
+                    btn.style.background = '#22c55e';
+                }, 1500);
+            }
+        }
+
+        function submitCategory(catName) {
+            fetch('/ticket/update_category', {
+                method: 'POST',
+                body: JSON.stringify({ ticket_id: ticketId, category: catName }),
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': "{{ csrf_token() }}"
+                }
+            });
+        }
+
+        function saveNote() {
+            const note = document.getElementById('internalNote').value;
+            fetch('/ticket/save_note', {
+                method: 'POST',
+                body: JSON.stringify({ ticket_id: ticketId, note: note }),
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': "{{ csrf_token() }}"
+                }
+            }).then(r => {
+                if (r.ok) {
+                    const msg = document.getElementById('noteSavedMsg');
+                    msg.style.display = 'block';
+                    setTimeout(() => msg.style.display = 'none', 2000);
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,211 @@
+<html lang="{{ current_lang }}" dir="{{ 'rtl' if current_lang == 'ar' else 'ltr' }}">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ _('إعدادات النظام') }} | {{ company_name }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <style>
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+        }
+
+        .settings-card {
+            background: var(--bg-card);
+            padding: 2rem;
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 1rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    </style>
+</head>
+
+<body style="display: block; overflow: hidden;">
+    <div class="dashboard-wrapper">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <ul class="nav-menu">
+                <li class="nav-item"><a href="/admin" class="nav-link">
+                        <span>{{ _('الرئيسية') }}</span> <i class="fas fa-home"></i></a></li>
+                <li class="nav-item"><a href="/admin/tickets" class="nav-link">
+                        <span>{{ _('التذاكر') }}</span> <i class="fas fa-ticket-alt"></i></a></li>
+                <li class="nav-item"><a href="/admin/employees" class="nav-link">
+                        <span>{{ _('الموظفين') }}</span> <i class="fas fa-user-tie"></i></a></li>
+                <li class="nav-item"><a href="/admin/customers" class="nav-link">
+                        <span>{{ _('العملاء') }}</span> <i class="fas fa-users"></i></a></li>
+                <li class="nav-item"><a href="/admin/reports" class="nav-link">
+                        <span>{{ _('التقارير') }}</span> <i class="fas fa-chart-bar"></i></a></li>
+                <li class="nav-item"><a href="/admin/settings" class="nav-link active">
+                        <span>{{ _('الإعدادات') }}</span> <i class="fas fa-cog"></i></a></li>
+
+                <li class="nav-item" style="margin-top: auto;">
+                    <a href="/logout" class="nav-link logout">
+                        <span>{{ _('تسجيل الخروج') }}</span> <i class="fas fa-sign-out-alt"></i>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-bar">
+                <div>
+                    <h1>{{ _('إعدادات النظام') }}</h1>
+                    <p class="subtitle">{{ _('تخصيص التصنيفات والمنتجات والخيارات العامة') }}</p>
+                </div>
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <a href="/set_lang/{{ 'en' if current_lang == 'ar' else 'ar' }}" class="lang-btn">
+                        <span>{{ 'English' if current_lang == 'ar' else 'العربية' }}</span>
+                        <i class="fas fa-globe"></i>
+                    </a>
+                </div>
+            </header>
+
+            <div class="settings-grid">
+                <!-- System Settings -->
+                <div class="settings-card" style="grid-column: 1 / -1;">
+                    <h3 style="margin-bottom: 1.5rem; color: var(--primary-color);"><i class="fas fa-cogs"></i> {{
+                        _('إعدادات النظام العامة') }}</h3>
+                    <form action="/admin/settings/system" method="POST"
+                        style="display: flex; gap: 20px; align-items: flex-end; flex-wrap: wrap;">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                        <div style="flex: 1; min-width: 250px;">
+                            <label style="display: block; color: var(--text-muted); margin-bottom: 8px;">{{ _('اسم
+                                البرنامج / الشركة') }}</label>
+                            <input type="text" name="company_name" value="{{ company_name }}" required
+                                style="width: 100%;">
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: auto; padding: 0.8rem 2rem;">{{
+                            _('حفظ التغييرات') }}</button>
+                    </form>
+                </div>
+
+                <!-- Admin Profile -->
+                <div class="settings-card">
+                    <h3 style="margin-bottom: 1.5rem; color: #a5b4fc;"><i class="fas fa-user-shield"></i> {{ _('بيانات
+                        المدير') }}
+                    </h3>
+                    <form action="/admin/settings/profile" method="POST"
+                        style="display: flex; flex-direction: column; gap: 15px;">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                        <div>
+                            <label style="display: block; color: var(--text-muted); margin-bottom: 5px;">{{ _('الاسم')
+                                }}</label>
+                            <input type="text" name="username" value="{{ admin.username }}" required>
+                        </div>
+                        <div>
+                            <label style="display: block; color: var(--text-muted); margin-bottom: 5px;">{{ _('البريد
+                                الإلكتروني') }}</label>
+                            <input type="email" name="email" value="{{ admin.email }}" required>
+                        </div>
+                        <div>
+                            <label style="display: block; color: var(--text-muted); margin-bottom: 5px;">{{ _('كلمة
+                                المرور الجديدة (اتركها فارغة إذا لم ترد التغيير)') }}</label>
+                            <input type="password" name="password" placeholder="********">
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="margin-top: 10px;">{{ _('تحديث الملف
+                            الشخصي') }}</button>
+                    </form>
+                </div>
+                <!-- Categories Management -->
+                <div class="settings-card">
+                    <h3 style="margin-bottom: 1.5rem;"><i class="fas fa-tags" style="color: var(--primary-color);"></i>
+                        {{ _('إدارة التصنيفات') }}</h3>
+                    <form action="/admin/settings/category/add" method="POST" class="add-form"
+                        style="display: flex; gap: 10px; margin-bottom: 2rem;">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                        <input type="text" name="name" placeholder="{{ _('اسم التصنيف الجديد...') }}" required
+                            style="flex: 1;">
+                        <button type="submit" class="btn btn-primary" style="width: auto; padding: 0 1.5rem;">{{
+                            _('إضافة') }}</button>
+                    </form>
+                    <div class="items-list">
+                        {% for cat in categories %}
+                        <div class="list-item">
+                            <span>{{ cat.name }}</span>
+                            <a href="/admin/settings/category/delete/{{ cat.id }}"
+                                onclick="return confirm('{{ _('حذف هذا التصنيف؟') }}')" class="delete-icon"
+                                style="color: var(--error-color);">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Products Management -->
+                <div class="settings-card">
+                    <h3 style="margin-bottom: 1.5rem;"><i class="fas fa-box-open"
+                            style="color: var(--accent-color);"></i> {{ _('إدارة المنتجات') }}</h3>
+                    <form action="/admin/settings/product/add" method="POST" class="add-form"
+                        style="display: flex; gap: 10px; margin-bottom: 2rem;">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                        <input type="text" name="name" placeholder="{{ _('اسم المنتج الجديد...') }}" required
+                            style="flex: 1;">
+                        <button type="submit" class="btn btn-primary" style="width: auto; padding: 0 1.5rem;">{{
+                            _('إضافة') }}</button>
+                    </form>
+                    <div class="items-list">
+                        {% for prod in products %}
+                        <div class="list-item">
+                            <span>{{ prod.name }}</span>
+                            <a href="/admin/settings/product/delete/{{ prod.id }}"
+                                onclick="return confirm('{{ _('حذف هذا المنتج؟') }}')" class="delete-icon"
+                                style="color: var(--error-color);">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Category Suggestions (New) -->
+                {% if suggestions %}
+                <div class="settings-card"
+                    style="grid-column: 1 / -1; margin-top: 1rem; border: 1px solid var(--primary-color);">
+                    <h3 style="margin-bottom: 1.5rem; color: var(--primary-color);"><i class="fas fa-keyboard"></i>
+                        {{ _('مقترحات التصنيفات اليدوية') }}</h3>
+                    <p style="color: var(--text-muted); margin-bottom: 1rem; font-size: 0.9rem;">{{ _('هذه تصنيفات كتبها
+                        الموظفون يدوياً. يمكنك الموافقة لإضافتها للنظام أو رفضها.') }}</p>
+                    <div
+                        style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem;">
+                        {% for sug in suggestions %}
+                        <div class="list-item"
+                            style="flex-direction: column; align-items: flex-start; gap: 10px; padding: 1.2rem;">
+                            <div style="display: flex; justify-content: space-between; width: 100%;">
+                                <span style="font-weight: bold; color: white; font-size: 1.1rem;">{{ sug.name }}</span>
+                                <span style="font-size: 0.8rem; color: var(--text-muted);">{{ _('بواسطة:') }} {{
+                                    sug.employee.username }}</span>
+                            </div>
+                            <div style="display: flex; gap: 10px; width: 100%;">
+                                <a href="/admin/settings/suggestion/approve/{{ sug.id }}" class="btn"
+                                    style="background: rgba(34, 197, 94, 0.2); color: #4ade80; flex: 1; text-align: center; text-decoration: none; padding: 0.5rem; border-radius: 6px;">{{
+                                    _('موافقة (إضافة)') }}</a>
+                                <a href="/admin/settings/suggestion/reject/{{ sug.id }}" class="btn"
+                                    style="background: rgba(239, 68, 68, 0.2); color: #f87171; flex: 1; text-align: center; text-decoration: none; padding: 0.5rem; border-radius: 6px;">{{
+                                    _('رفض (تجاهل)') }}</a>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,324 @@
+<html lang="{{ current_lang }}" dir="{{ 'rtl' if current_lang == 'ar' else 'ltr' }}">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ _('سجل التذاكر الكامل') }} | {{ company_name }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <style>
+        .sidebar-footer {
+            margin-top: auto;
+            padding: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-link.active {
+            background: rgba(99, 102, 241, 0.1);
+            color: #818cf8;
+            font-weight: bold;
+        }
+
+        .dashboard-wrapper {
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 260px;
+            background: #1f2937;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem;
+            background: #0f172a;
+        }
+
+        /* Filter Bar */
+        .filter-bar {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            align-items: end;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .filter-group label {
+            font-size: 0.8rem;
+            color: #94a3b8;
+        }
+
+        .filter-group input,
+        .filter-group select {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 0.6rem;
+            border-radius: 6px;
+            outline: none;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .table-container {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 1rem;
+
+            text-align: {
+                    {
+                    'right' if current_lang=='ar' else 'left'
+                }
+            }
+
+            ;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        th {
+            background: rgba(0, 0, 0, 0.2);
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        .badge {
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+
+        .badge-new {
+            background: rgba(239, 68, 68, 0.2);
+            color: #f87171;
+        }
+
+        .badge-progress {
+            background: rgba(245, 158, 11, 0.2);
+            color: #fbbf24;
+        }
+
+        .badge-pending {
+            background: rgba(99, 102, 241, 0.2);
+            color: #818cf8;
+        }
+
+        .badge-resolved {
+            background: rgba(34, 197, 94, 0.2);
+            color: #4ade80;
+        }
+
+        .btn-detail {
+            background: rgba(99, 102, 241, 0.15);
+            color: #a5b4fc;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.8rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            transition: 0.3s;
+        }
+
+        .btn-detail:hover {
+            background: rgba(99, 102, 241, 0.3);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard-wrapper">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <ul class="nav-menu">
+                <li class="nav-item"><a href="/admin" class="nav-link">
+                        <span>{{ _('الرئيسية') }}</span> <i class="fas fa-home"></i></a></li>
+                <li class="nav-item"><a href="/admin/tickets" class="nav-link active">
+                        <span>{{ _('التذاكر') }}</span> <i class="fas fa-ticket-alt"></i></a></li>
+                <li class="nav-item"><a href="/admin/employees" class="nav-link">
+                        <span>{{ _('الموظفين') }}</span> <i class="fas fa-user-tie"></i></a></li>
+                <li class="nav-item"><a href="/admin/customers" class="nav-link">
+                        <span>{{ _('العملاء') }}</span> <i class="fas fa-users"></i></a></li>
+                <li class="nav-item"><a href="/admin/reports" class="nav-link">
+                        <span>{{ _('التقارير') }}</span> <i class="fas fa-chart-bar"></i></a></li>
+                <li class="nav-item"><a href="/admin/settings" class="nav-link">
+                        <span>{{ _('الإعدادات') }}</span> <i class="fas fa-cog"></i></a></li>
+
+                <li class="nav-item" style="margin-top: auto;">
+                    <a href="/logout" class="nav-link logout">
+                        <span>{{ _('تسجيل الخروج') }}</span> <i class="fas fa-sign-out-alt"></i>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-bar">
+                <div>
+                    <h1>{{ _('سجل التذاكر الكامل') }}</h1>
+                    <p style="color: #64748b;">{{ _('إدارة ومراقبة جميع التذاكر في النظام') }}</p>
+                </div>
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <a href="/set_lang/{{ 'en' if current_lang == 'ar' else 'ar' }}" class="lang-btn">
+                        <span>{{ 'English' if current_lang == 'ar' else 'العربية' }}</span>
+                        <i class="fas fa-globe"></i>
+                    </a>
+                </div>
+            </header>
+
+            <!-- Filter Bar -->
+            <div class="filter-bar">
+                <div class="filter-group">
+                    <label>{{ _('اسم العميل / الموظف') }}</label>
+                    <input type="text" id="nameFilter" placeholder="{{ _('بحث بالاسم...') }}">
+                </div>
+                <div class="filter-group">
+                    <label>{{ _('التصنيف') }}</label>
+                    <select id="categoryFilter">
+                        <option value="">{{ _('الكل') }}</option>
+                        <option value="استفسار عام">{{ _('استفسار عام') }}</option>
+                        <option value="مشكلة تقنية">{{ _('مشكلة تقنية') }}</option>
+                        <option value="اقتراح">{{ _('اقتراح') }}</option>
+                        <option value="أخرى">{{ _('أخرى') }}</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>{{ _('الحالة') }}</label>
+                    <select id="statusFilter">
+                        <option value="">{{ _('الكل') }}</option>
+                        <option value="جديدة">{{ _('جديدة') }}</option>
+                        <option value="قيد العمل">{{ _('قيد العمل') }}</option>
+                        <option value="معلقة">{{ _('معلقة') }}</option>
+                        <option value="تم الحل">{{ _('تم الحل') }}</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>{{ _('التاريخ') }}</label>
+                    <input type="date" id="dateFilter">
+                </div>
+                <div class="filter-group" style="display: flex; flex-direction: row; gap: 10px; align-items: flex-end;">
+                    <button onclick="applyFilters()"
+                        style="background: #6366f1; color: white; border: none; padding: 0.6rem 1.5rem; border-radius: 6px; cursor: pointer; font-family: 'Cairo', sans-serif; font-weight: bold; flex: 1;">
+                        <i class="fas fa-search"></i> {{ _('بحث') }}
+                    </button>
+                    <button onclick="resetFilters()"
+                        style="background: rgba(255,255,255,0.05); color: #94a3b8; border: 1px solid rgba(255,255,255,0.1); padding: 0.6rem; border-radius: 6px; cursor: pointer;">
+                        {{ _('إعادة تعيين') }}
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tickets Table -->
+            <div class="table-container">
+                <table id="ticketsTable">
+                    <thead>
+                        <tr>
+                            <th>{{ _('رقم') }}</th>
+                            <th>{{ _('العميل') }}</th>
+                            <th>{{ _('الموظف') }}</th>
+                            <th>{{ _('التصنيف') }}</th>
+                            <th>{{ _('الحالة') }}</th>
+                            <th>{{ _('التاريخ') }}</th>
+                            <th>{{ _('الإجراء') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for ticket in tickets %}
+                        <tr class="ticket-row" data-customer="{{ ticket.customer.username }}"
+                            data-employee="{{ ticket.employee.username if ticket.employee else '---' }}"
+                            data-category="{{ ticket.category if ticket.category else _('عام') }}"
+                            data-status="{{ ticket.status }}" data-date="{{ ticket.created_at.strftime('%Y-%m-%d') }}">
+                            <td>#{{ ticket.id }}</td>
+                            <td style="font-weight: bold;">{{ ticket.customer.username }}</td>
+                            <td>{{ ticket.employee.username if ticket.employee else '---' }}</td>
+                            <td>{{ ticket.category if ticket.category else _('عام') }}</td>
+                            <td class="status-cell">
+                                {% if ticket.status == 'new' %}<span class="badge badge-new">{{ _('جديدة') }}</span>
+                                {% elif ticket.status == 'in_progress' %}<span class="badge badge-progress">{{ _('قيد
+                                    العمل') }}</span>
+                                {% elif ticket.status == 'pending' %}<span class="badge badge-pending">{{ _('معلقة')
+                                    }}</span>
+                                {% elif ticket.status == 'resolved' %}<span class="badge badge-resolved">{{ _('تم الحل')
+                                    }}</span>
+                                {% endif %}
+                            </td>
+                            <td style="font-size: 0.85rem; color: #94a3b8;">{{ ticket.created_at.strftime('%Y-%m-%d
+                                %I:%M %p') }}</td>
+                            <td>
+                                <a href="/chat?ticket_id={{ ticket.id }}" class="btn-detail">
+                                    <i class="fas fa-info-circle"></i> {{ _('تفاصيل') }}
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function applyFilters() {
+            const nameSearch = document.getElementById('nameFilter').value.toLowerCase();
+            const categorySelect = document.getElementById('categoryFilter').value;
+            const statusSelect = document.getElementById('statusFilter').value;
+            const dateInput = document.getElementById('dateFilter').value;
+
+            const rows = document.querySelectorAll('.ticket-row');
+
+            rows.forEach(row => {
+                const customer = row.getAttribute('data-customer').toLowerCase();
+                const employee = row.getAttribute('data-employee').toLowerCase();
+                const category = row.getAttribute('data-category');
+                const statusText = row.querySelector('.status-cell').innerText.trim();
+                const date = row.getAttribute('data-date');
+
+                let show = true;
+
+                if (nameSearch && !customer.includes(nameSearch) && !employee.includes(nameSearch)) show = false;
+                if (categorySelect && !category.includes(categorySelect)) show = false;
+                if (statusSelect && statusText !== statusSelect) show = false;
+                if (dateInput && date !== dateInput) show = false;
+
+                row.style.display = show ? '' : 'none';
+            });
+        }
+
+        function resetFilters() {
+            document.getElementById('nameFilter').value = '';
+            document.getElementById('categoryFilter').value = '';
+            document.getElementById('statusFilter').value = '';
+            document.getElementById('dateFilter').value = '';
+            applyFilters();
+        }
+    </script>
+</body>
+
+</html>

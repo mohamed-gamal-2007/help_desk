@@ -1,0 +1,198 @@
+<html lang="{{ current_lang }}" dir="{{ 'rtl' if current_lang == 'ar' else 'ltr' }}">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>التقارير والإحصائيات | {{ company_name }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <style>
+        .report-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .report-card {
+            background: var(--bg-card);
+            padding: 2rem;
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .stat-row:last-child {
+            border-bottom: none;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .stat-val {
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: #fff;
+        }
+    </style>
+</head>
+
+<body style="display: block; overflow: hidden;">
+    <div class="dashboard-wrapper">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <ul class="nav-menu">
+                <li class="nav-item"><a href="/admin" class="nav-link">
+                        <span>{{ _('الرئيسية') }}</span> <i class="fas fa-home"></i></a></li>
+                <li class="nav-item"><a href="/admin/tickets" class="nav-link">
+                        <span>{{ _('التذاكر') }}</span> <i class="fas fa-ticket-alt"></i></a></li>
+                <li class="nav-item"><a href="/admin/employees" class="nav-link">
+                        <span>{{ _('الموظفين') }}</span> <i class="fas fa-user-tie"></i></a></li>
+                <li class="nav-item"><a href="/admin/customers" class="nav-link">
+                        <span>{{ _('العملاء') }}</span> <i class="fas fa-users"></i></a></li>
+                <li class="nav-item"><a href="/admin/reports" class="nav-link active">
+                        <span>{{ _('التقارير') }}</span> <i class="fas fa-chart-bar"></i></a></li>
+                <li class="nav-item"><a href="/admin/settings" class="nav-link">
+                        <span>{{ _('الإعدادات') }}</span> <i class="fas fa-cog"></i></a></li>
+
+                <li class="nav-item" style="margin-top: auto;">
+                    <a href="/logout" class="nav-link logout">
+                        <span>{{ _('تسجيل الخروج') }}</span> <i class="fas fa-sign-out-alt"></i>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <header class="top-bar">
+                <div>
+                    <h1>{{ _('التقارير والإحصائيات') }}</h1>
+                    <p class="subtitle">{{ _('نظرة شاملة على أداء النظام والفريق') }}</p>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <a href="/set_lang/{{ 'en' if current_lang == 'ar' else 'ar' }}" class="lang-btn">
+                        <span>{{ 'English' if current_lang == 'ar' else 'العربية' }}</span>
+                        <i class="fas fa-globe"></i>
+                    </a>
+                </div>
+            </header>
+
+            <div class="report-grid">
+                <!-- General Summary -->
+                <div class="report-card">
+                    <h3 style="margin-bottom: 1.5rem; color: var(--primary-color);"><i class="fas fa-info-circle"></i>
+                        {{ _('ملخص عام') }}</h3>
+                    <div class="stat-row">
+                        <span class="stat-label">{{ _('إجمالي التذاكر') }}</span>
+                        <span class="stat-val">{{ stats.total_tickets }}</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">{{ _('تذاكر تم حلها') }}</span>
+                        <span class="stat-val" style="color: var(--success-color);">{{ stats.resolved_tickets }}</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">{{ _('تذاكر نشطة حالياً') }}</span>
+                        <span class="stat-val" style="color: #eab308;">{{ stats.active_tickets }}</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">{{ _('نسبة الإنجاز') }}</span>
+                        <span class="stat-val">{{ ((stats.resolved_tickets / stats.total_tickets * 100) if
+                            stats.total_tickets > 0 else 0) | round(1) }}%</span>
+                    </div>
+                </div>
+
+                <!-- Users Summary -->
+                <div class="report-card">
+                    <h3 style="margin-bottom: 1.5rem; color: var(--accent-color);"><i class="fas fa-users"></i> {{
+                        _('مستخدمو النظام') }}</h3>
+                    <div class="stat-row">
+                        <span class="stat-label">{{ _('عدد الموظفين') }}</span>
+                        <span class="stat-val">{{ stats.total_employees }}</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">{{ _('عدد العملاء') }}</span>
+                        <span class="stat-val">{{ stats.total_customers }}</span>
+                    </div>
+                </div>
+
+                <!-- Performance table -->
+                <div class="report-card" style="grid-column: 1 / -1; margin-top: 1rem;">
+                    <h3 style="margin-bottom: 1.5rem; color: #4ade80;"><i class="fas fa-medal"></i> {{ _('أداء
+                        الموظفين') }}</h3>
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: collapse; color: white; font-size: 0.9rem;">
+                            <thead>
+                                <tr
+                                    style="text-align: {{ 'right' if current_lang == 'ar' else 'left' }}; border-bottom: 2px solid rgba(255,255,255,0.1);">
+                                    <th style="padding: 1.2rem 1rem;">{{ _('الموظف') }}</th>
+                                    <th style="padding: 1.2rem 1rem;">{{ _('تذاكر محلولة') }}</th>
+                                    <th style="padding: 1.2rem 1rem;">{{ _('تقييم العملاء') }}</th>
+                                    <th style="padding: 1.2rem 1rem;">{{ _('الإنتاجية') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for emp in emp_performance %}
+                                <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                    <td style="padding: 1rem; font-weight: bold;">{{ emp.username }}</td>
+                                    <!-- <td style="padding: 1rem; font-family: monospace; color: #a5b4fc;">
+                                        <i class="fas fa-bolt"></i> {{ emp.avg_speed }}
+                                    </td> -->
+                                    <td style="padding: 1rem; color: var(--success-color);">{{ emp.resolved }}</td>
+                                    <td style="padding: 1rem;">
+                                        <div style="display: flex; align-items: center; gap: 5px;">
+                                            <span style="font-weight: bold; color: #facc15;">{{ emp.avg_rating }}</span>
+                                            <i class="fas fa-star" style="color: #facc15; font-size: 0.8rem;"></i>
+                                            <span style="font-size: 0.8rem; color: #64748b;">({{ emp.rating_count
+                                                }})</span>
+                                        </div>
+                                    </td>
+                                    <td style="padding: 1rem;">
+                                        {% set total_tickets = emp.resolved + emp.active %}
+                                        {% set percentage = (emp.resolved / total_tickets * 100) | round(0) if
+                                        total_tickets > 0 else 0 %}
+                                        <div
+                                            style="background: rgba(255,255,255,0.1); border-radius: 10px; width: 60px; height: 6px; overflow: hidden; display: inline-block; vertical-align: middle; margin-left: 5px;">
+                                            <div
+                                                style="background: var(--success-color); height: 100%; width: {{ percentage }}%;">
+                                            </div>
+                                        </div>
+                                        <span style="font-size: 0.8rem;">{{ percentage }}%</span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Categories Summary -->
+                <div class="report-card">
+                    <h3 style="margin-bottom: 1.5rem; color: #a855f7;"><i class="fas fa-tags"></i> {{ _('توزيع
+                        التصنيفات') }}</h3>
+                    {% for cat, count in categories_stat %}
+                    <div class="stat-row">
+                        <span class="stat-label">{{ cat if cat else _('غير مصنف') }}</span>
+                        <span class="stat-val">{{ count }}</span>
+                    </div>
+                    {% else %}
+                    <p style="color: var(--text-muted); text-align: center;">{{ _('لا توجد بيانات حالياً') }}</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>
